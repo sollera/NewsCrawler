@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.test.mapper.newsMapper">
+	
+	<!-- 기사 조회 -->
+	<select id="newsList" resultType="newsVO" parameterType="java.lang.Integer">
+		SELECT * FROM news LIMIT #{firstNews},20;
+	</select>
+	
+	<!-- 상태 조회 -->
+	<select id="statusList" resultType="statusVO">
+		SELECT * FROM statusNews;
+	</select>
+	
+	<!-- 상태정보 갱신 -->
+	<update id="statusUpdate" parameterType="hashmap">
+		UPDATE statusNews SET chosun=#{chosun},donga=#{donga},seoul=#{seoul},ytn=#{ytn},segye=#{segye},newdaily=#{newdaily};
+	</update>
+	
+</mapper>
