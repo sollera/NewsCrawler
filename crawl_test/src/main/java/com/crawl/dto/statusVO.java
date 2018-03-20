@@ -7,6 +7,7 @@ public class statusVO {
 	private int ytn;
 	private int segye;
 	private int newdaily;
+	private String modifyTime;
 	
 	public int getChosun() {
 		return chosun;
@@ -43,5 +44,11 @@ public class statusVO {
 	}
 	public void setNewdaily(int newdaily) {
 		this.newdaily = newdaily;
+	}
+	public String getModifyTime() {
+		return modifyTime;
+	}
+	public void setModifyTime(String modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 }

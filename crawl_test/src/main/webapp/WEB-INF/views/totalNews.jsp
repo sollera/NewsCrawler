@@ -6,6 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
+<title>News</title>
+
 <!-- 페이징을 위한 부트스트랩 css 호출 -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
@@ -87,11 +89,14 @@ function status(){
 <div style="background:#EAEAEA;font-size:20px;text-align:center;">
 신문 모아보기
 </div>
+<!-- 크롤링 서버 상태 -->
 <div id="status" width="100%"></div>
 <script>
 	status();
-	//setInterval(status, 5000);
+	setInterval(status, 5000);
 </script>
+
+<!-- 뉴스 목록 -->
 <div class="container">
 	<table class="table table-hover">
 		<colgroup>
@@ -107,7 +112,6 @@ function status(){
 			</tr>
 		</thead>
 		<tbody id="tb_newsList">
-		
 			<c:forEach items="${newsList}" var="list">
 				<tr>
 					<td style="text-align:center;">${list.site}</td>
@@ -115,9 +119,52 @@ function status(){
 					<td style="text-align:center;">${list.enrollDT}</td>
 				</tr>
 			</c:forEach>
-		 
 		</tbody>
 	</table>
 </div>
+
+<!-- 페이징 -->
+<div align="center">
+	<ul class="pagination">
+		<!-- 이전 페이지 블록으로 이동 버튼 -->
+		<c:choose>
+			<c:when test="${previous eq 'yes'}">
+				<li class="page-item"><a class="page-link" href="/ctest/news/${firstPage-10}">&laquo;</a></li>
+			</c:when>
+			<c:otherwise>
+				<li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+			</c:otherwise>
+		</c:choose>
+		<!-- 페이지 번호(다음 페이지 번호 유/무) -->
+		<c:choose>
+			<c:when test="${next eq 'yes'}">
+				<c:forEach begin="${firstPage}" end="${firstPage+9}" var="pgN">
+					<c:choose>
+						<c:when test="${pgN eq curPage}"><li class="page-item active"><a class="page-link">${pgN}<span class="sr-only">(current)</span></a></li></c:when>
+						<c:otherwise><li class="page-item"><a class="page-link" href="/ctest/news/${pgN}">${pgN}</a></li></c:otherwise>
+					</c:choose>
+				</c:forEach>
+			</c:when>
+			<c:otherwise>
+				<c:forEach begin="${firstPage}" end="${lastPage}" var="pgN">
+					<c:choose>
+						<c:when test="${pgN eq curPage}"><li class="page-item active"><a class="page-link">${pgN}<span class="sr-only">(current)</span></a></li></c:when>
+						<c:otherwise><li class="page-item"><a class="page-link" href="/ctest/news/${pgN}">${pgN}</a></li></c:otherwise>
+					</c:choose>
+				</c:forEach>
+			</c:otherwise>
+		</c:choose>
+		<!-- 다음 페이지 블록으로 이동 버튼 -->
+		<c:choose>
+			<c:when test="${next eq 'yes'}">
+				<li class="page-item"><a class="page-link" href="/ctest/news/${firstPage+10}">&laquo;</a></li>
+			</c:when>
+			<c:otherwise>
+				<li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+			</c:otherwise>
+		</c:choose>
+	</ul>
+</div>
+
 </body>
 </html>

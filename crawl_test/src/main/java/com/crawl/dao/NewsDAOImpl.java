@@ -31,5 +31,11 @@ public class NewsDAOImpl implements NewsDAO {
 	public void updateStatus() {
 		sqlSession.update(Namespace+".statusUpdate");
 	}
+
+	@Override
+	public int newsCnt(String site) {
+		if(site.equals("")) return sqlSession.selectOne(Namespace+".newsCnt");
+		else return sqlSession.selectOne(Namespace+".specificNewsCnt",site);
+	}
 	
 }

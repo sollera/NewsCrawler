@@ -4,11 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.crawl.dto.statusVO;
 
 
 
@@ -19,7 +19,9 @@ public class NewsBot {
 		Class.forName("com.mysql.jdbc.Driver");  //드라이버 호출
 		
     	final Crawler crawler = new Crawler();
-    	final statusVO vo = new statusVO();
+    	
+    	final long time = System.currentTimeMillis(); 
+		final SimpleDateFormat dayTime = new SimpleDateFormat("yyyy/mm/dd hh:mm");
         
         int sleepSec = 60 ;	// 실행간격 지정(1분)
         final ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);	 // 주기적인 작업 실행(linux에서 daemon 돌리듯이..), 조선일보 쓰레드
@@ -38,13 +40,14 @@ public class NewsBot {
                 	stmt1.executeUpdate("UPDATE statusNews SET chosun=1");
             		//?useSSL=false 를 데이터베이스 이름 뒤에 쓰면 에러메시지 안뜸
             		conn.setAutoCommit(false);
-            		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
+            		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT,modifyTime) VALUES(?,?,?,?,?);";
                 	PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
                 	for(int i = 0; i < crawler.chosun().size(); i++) {
                 		stmt.setString(1, crawler.chosun().get(i)[0]);
                 		stmt.setString(2, crawler.chosun().get(i)[1]);
                 		stmt.setString(3, crawler.chosun().get(i)[2]);
                 		stmt.setString(4, crawler.chosun().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}
@@ -88,6 +91,7 @@ public class NewsBot {
                 		stmt.setString(2, crawler.donga().get(i)[1]);
                 		stmt.setString(3, crawler.donga().get(i)[2]);
                 		stmt.setString(4, crawler.donga().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}
@@ -131,6 +135,7 @@ public class NewsBot {
                 		stmt.setString(2, crawler.seoul().get(i)[1]);
                 		stmt.setString(3, crawler.seoul().get(i)[2]);
                 		stmt.setString(4, crawler.seoul().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}
@@ -174,6 +179,7 @@ public class NewsBot {
                 		stmt.setString(2, crawler.ytn().get(i)[1]);
                 		stmt.setString(3, crawler.ytn().get(i)[2]);
                 		stmt.setString(4, crawler.ytn().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}
@@ -217,6 +223,7 @@ public class NewsBot {
                 		stmt.setString(2, crawler.segye().get(i)[1]);
                 		stmt.setString(3, crawler.segye().get(i)[2]);
                 		stmt.setString(4, crawler.segye().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}
@@ -260,6 +267,7 @@ public class NewsBot {
                 		stmt.setString(2, crawler.newDaily().get(i)[1]);
                 		stmt.setString(3, crawler.newDaily().get(i)[2]);
                 		stmt.setString(4, crawler.newDaily().get(i)[3]);
+                		stmt.setString(5, dayTime.format(new Date(time)));
                 		
                 		stmt.addBatch();
                 	}

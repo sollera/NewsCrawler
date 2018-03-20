@@ -20,4 +20,14 @@
 		UPDATE statusNews SET chosun=#{chosun},donga=#{donga},seoul=#{seoul},ytn=#{ytn},segye=#{segye},newdaily=#{newdaily};
 	</update>
 	
+	<!-- 기사 숫자 세기 -->
+	<select id="newsCnt" resultType="java.lang.Integer">
+		SELECT count(title) FROM news; 
+	</select>
+	
+	<!-- 특정 신문사 기사 숫자 세기 -->
+	<select id="specificNewsCnt" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT count(title) FROM news WHERE site = #{site}; 
+	</select>
+	
 </mapper>

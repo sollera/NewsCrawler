@@ -22,7 +22,7 @@ public class RestAPIController {
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<statusVO> listStatus(){
 		List<statusVO> listS = dao.selectStatus();
-	     return listS;
+		return listS;
 	}
 	
 	/*
@@ -33,6 +33,5 @@ public class RestAPIController {
 	     return listN;
 	}
 	*/
-	
 	
 }
