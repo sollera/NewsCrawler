@@ -90,7 +90,7 @@ function status(){
 신문 모아보기
 </div>
 <!-- 크롤링 서버 상태 -->
-<div id="status" width="100%"></div>
+<div id="status" style="width:100%;"></div>
 <script>
 	status();
 	setInterval(status, 5000);

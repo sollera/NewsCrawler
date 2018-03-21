@@ -3,6 +3,7 @@ package com.crawl.controller;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.crawl.crawler.NewsBot;
 import com.crawl.dao.NewsDAO;
 import com.crawl.dto.newsVO;
 
@@ -20,6 +22,8 @@ import com.crawl.dto.newsVO;
 public class HomeController {
 	@Inject
 	private NewsDAO dao;
+	
+	NewsBot bot = new NewsBot();
 	
 	
 	/**
@@ -67,9 +71,27 @@ public class HomeController {
 		return "redirect:/news/1";
 	}
 	
-	@RequestMapping(value = "/status")
-	public String statusPage() {
-		
+	@RequestMapping(value = "/status/{power}")
+	public String statusPage(@PathVariable String power, Model model, HttpServletRequest httpServletRequest) {
+		String ajaxStart = "";
+		if(httpServletRequest.getParameter("ajax") != null) ajaxStart = httpServletRequest.getParameter("ajax");
+		model.addAttribute("ajaxStart",ajaxStart);
+		model.addAttribute("power",power);
 		return "statusPage";
+	}
+	@RequestMapping(value = "/status")
+	public String statusPage1() {
+		return "redirect:/status/powerOff";
+	}
+	
+	@RequestMapping(value = "/powerOn")
+	public String botStart() {
+		bot.crawlingBot(60);
+		return "redirect:/status/powerOn?ajax=go";
+	}
+	@RequestMapping(value = "/powerOff")
+	public String botEnd() {
+		bot.crawlingBot(0);
+		return "redirect:/status/powerOff";
 	}
 }
