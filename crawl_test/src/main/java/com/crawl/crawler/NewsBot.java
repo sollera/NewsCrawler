@@ -36,7 +36,7 @@ public class NewsBot {
     		
     	}else {	//크롤링 서버 구동
     		
-    		execEnd();	//쓰레드 강제 종료
+    		if(exec != null) execEnd();	//쓰레드 강제 종료
         	
     		execStart();	//쓰레드 초기화
         	
