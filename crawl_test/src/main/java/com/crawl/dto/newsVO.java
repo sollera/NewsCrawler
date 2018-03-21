@@ -5,7 +5,7 @@ public class newsVO {
 	private String title;
 	private String enrollDT;
 	private String newsURL;
-	private String insertDbDt;
+	private String saveDT;
 	
 	public String getSite() {
 		return site;
@@ -32,9 +32,9 @@ public class newsVO {
 		this.newsURL = newsURL;
 	}
 	public String getInsertDbDt() {
-		return insertDbDt;
+		return saveDT;
 	}
-	public void setInsertDbDt(String insertDbDt) {
-		this.insertDbDt = insertDbDt;
+	public void setInsertDbDt(String saveDT) {
+		this.saveDT = saveDT;
 	}
 }

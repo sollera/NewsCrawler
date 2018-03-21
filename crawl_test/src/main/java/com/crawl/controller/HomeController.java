@@ -36,7 +36,7 @@ public class HomeController {
 		try {curPage = Integer.parseInt(curPage1);} catch(Exception numErr) {errMsg = "잘못된 접근입니다.";}
 		
 		int allNewsCnt = dao.newsCnt("");	//전체 뉴스 수
-		int firstPage = curPage/10 + 1;
+		int firstPage = (curPage/10)*10 + 1;
 		int realLastPage = (allNewsCnt+19) / 20;	//전체 페이지 수
 		
 		if(curPage < 1) {curPage = 1; errMsg = "잘못된 접근입니다.";}	//페이지 패스 에러 잡기

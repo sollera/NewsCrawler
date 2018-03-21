@@ -116,27 +116,27 @@ public class Crawler {
 					url = newslinkYtn1.attr("abs:href").trim();
 					dt = url.substring(30,34)+"/"+url.substring(34,36)+"/"+url.substring(36,38);
 					String[] ytnNews = {"YTN",headlineTxt,url,dt};
-					
+
 					ytnList.add(ytnNews);
 				}
 			}
 		}catch(Exception eY) {}
 		
 		try {
-		Elements linksYtn2 = newsContentYtn.select("div.unit_box p a");	//탑뉴스 제외, 관련기사 제외한 주요 기사들의 헤드라인만
-		for(Element newslinkYtn2 : linksYtn2) {
-			if(newslinkYtn2.text().equals("") == false) {
-				headlineTxt = newslinkYtn2.text();
-				headlineTxt = headlineTxt.replaceAll("'", "");
-				headlineTxt = headlineTxt.replaceAll("\"", "");
-				if(headlineTxt.indexOf("[영상]") == 0) headlineTxt = headlineTxt.substring(4);
-				url = newslinkYtn2.attr("abs:href").trim();
-				dt = url.substring(30,34)+"/"+url.substring(34,36)+"/"+url.substring(36,38);
-				String[] ytnNews = {"YTN",headlineTxt,url,dt};
-				
-				ytnList.add(ytnNews);
+			Elements linksYtn2 = newsContentYtn.select("div.unit_box p a");	//탑뉴스 제외, 관련기사 제외한 주요 기사들의 헤드라인만
+			for(Element newslinkYtn2 : linksYtn2) {
+				if(newslinkYtn2.text().equals("") == false) {
+					headlineTxt = newslinkYtn2.text();
+					headlineTxt = headlineTxt.replaceAll("'", "");
+					headlineTxt = headlineTxt.replaceAll("\"", "");
+					if(headlineTxt.indexOf("[영상]") == 0) headlineTxt = headlineTxt.substring(4);
+					url = newslinkYtn2.attr("abs:href").trim();
+					dt = url.substring(30,34)+"/"+url.substring(34,36)+"/"+url.substring(36,38);
+					String[] ytnNews = {"YTN",headlineTxt,url,dt};
+					
+					ytnList.add(ytnNews);
+				}
 			}
-		}
 		}catch(Exception eY1) {}
 		
 		return ytnList;

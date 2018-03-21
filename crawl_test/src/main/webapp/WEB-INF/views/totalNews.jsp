@@ -62,6 +62,24 @@ function status(){
 	});
 }
 
+//새로운 뉴스가 있는지 확인
+var newsCntOri = 0;
+function newsCnt(){
+	$.ajax({
+		type: "get",
+		//contentType: "application/json", ==> 생략가능(RestController이기때문에 가능)
+		url: "/ctest/newsCnt.do",
+		success: function(result){
+		    if(result > newsCntOri){
+				newsCntOri = result;
+				$("#newsCnt").html("<a href='http://localhost:8082/ctest/news/1' style='color: red'>new</a>");
+		    }else if(result == newsCntOri){
+				$("#newsCnt").html("&nbsp;&nbsp;&nbsp;");
+		    }
+		}, error: function() {}
+	});
+}
+
 //기사 ajax
 //function news(firstnews){
 //	$.ajax({
@@ -90,10 +108,14 @@ function status(){
 신문 모아보기
 </div>
 <!-- 크롤링 서버 상태 -->
-<div id="status" style="width:100%;"></div>
+<table border="0" style="margin-left: auto; margin-right: auto;"><tr><td>
+<div id="status" style="float:left;margin-right:10px;"></div><div id="newsCnt" style="float:left;"></div>
+</td></tr></table>
 <script>
 	status();
 	setInterval(status, 5000);
+	newsCnt();
+	setInterval(newsCnt, 1000);
 </script>
 
 <!-- 뉴스 목록 -->
@@ -157,10 +179,10 @@ function status(){
 		<!-- 다음 페이지 블록으로 이동 버튼 -->
 		<c:choose>
 			<c:when test="${next eq 'yes'}">
-				<li class="page-item"><a class="page-link" href="/ctest/news/${firstPage+10}">&laquo;</a></li>
+				<li class="page-item"><a class="page-link" href="/ctest/news/${firstPage+10}">&raquo;</a></li>
 			</c:when>
 			<c:otherwise>
-				<li class="page-item disabled"><a class="page-link">&laquo;</a></li>
+				<li class="page-item disabled"><a class="page-link">&raquo;</a></li>
 			</c:otherwise>
 		</c:choose>
 	</ul>

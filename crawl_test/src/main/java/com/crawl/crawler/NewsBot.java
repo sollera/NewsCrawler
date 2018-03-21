@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -89,11 +90,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);	//배치 처리를 위해 오토커밋 끄기
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
                 	PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.chosun().size(); i++) {
-                		stmt.setString(1, crawler.chosun().get(i)[0]);
-                		stmt.setString(2, crawler.chosun().get(i)[1]);
-                		stmt.setString(3, crawler.chosun().get(i)[2]);
-                		stmt.setString(4, crawler.chosun().get(i)[3]);
+            		List<String[]> chosun = crawler.chosun();
+                	for(int i = 0; i < chosun.size(); i++) {
+                		stmt.setString(1, chosun.get(i)[0]);
+                		stmt.setString(2, chosun.get(i)[1]);
+                		stmt.setString(3, chosun.get(i)[2]);
+                		stmt.setString(4, chosun.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}
@@ -140,11 +142,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
                 	PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.donga().size(); i++) {
-                		stmt.setString(1, crawler.donga().get(i)[0]);
-                		stmt.setString(2, crawler.donga().get(i)[1]);
-                		stmt.setString(3, crawler.donga().get(i)[2]);
-                		stmt.setString(4, crawler.donga().get(i)[3]);
+            		List<String[]> donga = crawler.donga();
+                	for(int i = 0; i < donga.size(); i++) {
+                		stmt.setString(1, donga.get(i)[0]);
+                		stmt.setString(2, donga.get(i)[1]);
+                		stmt.setString(3, donga.get(i)[2]);
+                		stmt.setString(4, donga.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}
@@ -189,11 +192,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
             		PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.seoul().size(); i++) {
-                		stmt.setString(1, crawler.seoul().get(i)[0]);
-                		stmt.setString(2, crawler.seoul().get(i)[1]);
-                		stmt.setString(3, crawler.seoul().get(i)[2]);
-                		stmt.setString(4, crawler.seoul().get(i)[3]);
+            		List<String[]> seoul = crawler.seoul();
+                	for(int i = 0; i < seoul.size(); i++) {
+                		stmt.setString(1, seoul.get(i)[0]);
+                		stmt.setString(2, seoul.get(i)[1]);
+                		stmt.setString(3, seoul.get(i)[2]);
+                		stmt.setString(4, seoul.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}
@@ -238,11 +242,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
             		PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.ytn().size(); i++) {
-                		stmt.setString(1, crawler.ytn().get(i)[0]);
-                		stmt.setString(2, crawler.ytn().get(i)[1]);
-                		stmt.setString(3, crawler.ytn().get(i)[2]);
-                		stmt.setString(4, crawler.ytn().get(i)[3]);
+            		List<String[]> ytn = crawler.ytn();
+                	for(int i = 0; i < ytn.size(); i++) {
+                		stmt.setString(1, ytn.get(i)[0]);
+                		stmt.setString(2, ytn.get(i)[1]);
+                		stmt.setString(3, ytn.get(i)[2]);
+                		stmt.setString(4, ytn.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}
@@ -287,11 +292,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
             		PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.segye().size(); i++) {
-                		stmt.setString(1, crawler.segye().get(i)[0]);
-                		stmt.setString(2, crawler.segye().get(i)[1]);
-                		stmt.setString(3, crawler.segye().get(i)[2]);
-                		stmt.setString(4, crawler.segye().get(i)[3]);
+            		List<String[]> segye = crawler.segye();
+                	for(int i = 0; i < segye.size(); i++) {
+                		stmt.setString(1, segye.get(i)[0]);
+                		stmt.setString(2, segye.get(i)[1]);
+                		stmt.setString(3, segye.get(i)[2]);
+                		stmt.setString(4, segye.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}
@@ -336,11 +342,12 @@ public class NewsBot {
             		conn.setAutoCommit(false);
             		String query = "INSERT IGNORE INTO news(site,title,newsURL,enrollDT) VALUES(?,?,?,?);";
             		PreparedStatement stmt = conn.prepareStatement(query);  //스테이트먼트 객체 생성
-                	for(int i = 0; i < crawler.newDaily().size(); i++) {
-                		stmt.setString(1, crawler.newDaily().get(i)[0]);
-                		stmt.setString(2, crawler.newDaily().get(i)[1]);
-                		stmt.setString(3, crawler.newDaily().get(i)[2]);
-                		stmt.setString(4, crawler.newDaily().get(i)[3]);
+            		List<String[]> newDaily = crawler.newDaily();
+                	for(int i = 0; i < newDaily.size(); i++) {
+                		stmt.setString(1, newDaily.get(i)[0]);
+                		stmt.setString(2, newDaily.get(i)[1]);
+                		stmt.setString(3, newDaily.get(i)[2]);
+                		stmt.setString(4, newDaily.get(i)[3]);
                 		
                 		stmt.addBatch();
                 	}

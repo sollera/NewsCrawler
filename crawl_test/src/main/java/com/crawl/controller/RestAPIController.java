@@ -25,6 +25,12 @@ public class RestAPIController {
 		return listS;
 	}
 	
+	@RequestMapping("/newsCnt.do")
+	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
+	public int newNews(){
+		return dao.newsCnt("");
+	}
+	
 	/*
 	@RequestMapping("/news.do/{firstNews}")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)

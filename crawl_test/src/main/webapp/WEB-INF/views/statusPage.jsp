@@ -59,7 +59,7 @@ function status(){
 			status_tb += "<tr "+donga+"><td>동아일보</td><td>"+dongaStat+"</td></tr>";
 			status_tb += "<tr "+seoul+"><td>서울신문</td><td>"+seoulStat+"</td></tr>";
 			status_tb += "<tr "+ytn+"><td>YTN</td><td>"+ytnStat+"</td></tr>";
-			status_tb += "<tr "+segye+"><td>세게일보</td><td>"+segyeStat+"</td></tr>";
+			status_tb += "<tr "+segye+"><td>세계일보</td><td>"+segyeStat+"</td></tr>";
 			status_tb += "<tr "+newdaily+"><td>NewDaily</td><td>"+newdailyStat+"</td></tr>";
 			
 			$("#tb_status").html(status_tb);
@@ -119,7 +119,7 @@ function onOff(power){
 	<script>
 	//ajax 구동
 	status();
-	setInterval(status, 5000);
+	setInterval(status, 200);
 	</script>
 </c:when>
 <c:otherwise>

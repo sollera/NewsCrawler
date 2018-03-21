@@ -7,7 +7,7 @@
 	
 	<!-- 기사 조회 -->
 	<select id="newsList" resultType="newsVO" parameterType="java.lang.Integer">
-		SELECT * FROM news LIMIT #{firstNews},20;
+		SELECT * FROM news ORDER BY saveDT desc LIMIT #{firstNews},20;
 	</select>
 	
 	<!-- 상태 조회 -->
