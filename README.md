@@ -11,7 +11,8 @@ When the crawler starts operating, it is performed once per minute.
 I used the 'jsoup' library to create this crawler for html parsing.
 
 
-<!-- How to use -->
+!How to use
+
 Default PATH is 'localhost:8082/ctest/'.
 
 This page will provide you with crawled news information.
