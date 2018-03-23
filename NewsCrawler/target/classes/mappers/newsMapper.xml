@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.news.mapper.newsMapper">
+	
+	<!-- 뉴스 기사들 뷰 페이지에 필요한 sql들 -->
+	
+	<!-- 기사 조회 -->
+	<select id="newsList" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	
+	<!-- 전체 기사 숫자 세기(페이징) -->
+	<select id="newsCnt" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%'); 
+	</select>
+	
+	
+	
+	
+	
+	<!-- 크롤링 서버 상태 페이지에 필요한 sql들 -->
+	
+	<!-- 상태 조회(0-2 & 최근 갱신 시간) -->
+	<select id="statusList" resultType="statusVO">
+		SELECT * FROM statusNews;
+	</select>
+	
+	<!-- 사이트 별 크롤링 성공/실패 개수 세기 -->
+	<select id="errCnt" resultType="ratioVO" parameterType="java.lang.String">
+		SELECT * FROM crawlingLog WHERE dt LIKE CONCAT(#{today},'%');
+	</select>
+	
+	<!-- 에러 로그 -->
+	<select id="errLog" resultType="logVO" parameterType="java.lang.String">
+		SELECT errTime,site,error FROM errLog WHERE errTime LIKE CONCAT(#{today},'%');
+	</select>
+	
+	
+	
+	
+	<!-- 둘다에서 쓰이는 sql들 -->
+	
+	<!-- NewsPage : 신문사 별 기사 수  // StatusPage : 신문사 별 추가된 기사 수 -->
+	<select id="cntPerSite" resultType="cntVO" parameterType="java.lang.String">
+		SELECT site col,count(title) cnt FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') GROUP BY col ORDER BY cnt DESC;
+	</select>
+	<!-- NewsPage : 카테고리 별 기사 수 -->
+	<select id="cntPerType" resultType="cntVO" parameterType="java.lang.String">
+		SELECT type col,count(title) cnt FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') GROUP BY col ORDER BY cnt DESC;
+	</select>
+	
+</mapper>
