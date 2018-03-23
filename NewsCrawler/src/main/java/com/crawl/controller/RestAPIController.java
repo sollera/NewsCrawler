@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crawl.crawler.Bot_R;
 import com.crawl.dao.NewsDAO;
+import com.crawl.dto.crawlingRatioVO;
 import com.crawl.dto.numberOfCasesVO;
 import com.crawl.dto.statusVO;
 
@@ -61,6 +62,12 @@ public class RestAPIController {
 			newsBot.crawlingBot(0);	//크롤러 할당 쓰레드 강제 종료
 		}
 		else System.out.println("--------------------------------- 크롤링 핸들러 비정상 접근 ---------------------------------");
+	}
+	
+	@RequestMapping("/errCnt.do")
+	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
+	public List<crawlingRatioVO> errCnt(){
+		return dao.selectErrCnt();
 	}
 	
 }

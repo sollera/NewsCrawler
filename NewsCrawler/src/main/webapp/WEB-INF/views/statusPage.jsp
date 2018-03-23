@@ -66,7 +66,6 @@ setInterval(function status(){
 			else if(result.hangyeorye == -1) hangyeorye = grey;
 			
 			mTime = result.modifyTime;
-			mTime = mTime.substring(5);
 			
 			$("#td_chosun").html(chosun);
 			$("#td_donga").html(donga);
@@ -80,7 +79,7 @@ setInterval(function status(){
 			alert("db 확인 ajax 에러");
 		}
 	});
-},5000);
+},1000);
 
 //크롤러 켜져있는지 체크해서 버튼 값 반영
 var crawlerOn = "<button type='button' onclick='crawlerControll(&quot;on&quot;)'>Crawler On</button>&nbsp; &nbsp;<button type='button' disabled>Crawler Off</button>";
@@ -119,23 +118,48 @@ function crawlerControll(power){
 			url: "/crawler/bot/end",
 			success: function(){
 				alert("크롤러 동작 종료");
-				//다 꺼졌는지 확인하고 바꾸기
-				//$("#crawlerStartButton").html(crawlerOn);
+				//쓰레드 종료 안되는 문제 해결 좀.....
+				$("#crawlerStartButton").html(crawlerOn);
 			},error: function(){
 				alert("크롤러 컨트롤 실패");
 			}
 		});
 	}
-} 
+}
 
 setInterval(function errCnt(){
 	$.ajax({
 		type: "get",
-		url: "/crawler/onOff.do",
-		success: function(data){
-			
-			
-			
+		url: "/crawler/errCnt.do",
+		success: function(errData){
+			for(var i in errData){
+				if(errData[i].site == "조선일보") {
+					$("#td_chosunSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_chosunErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else if(errData[i].site == "동아일보") {
+					$("#td_dongaSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_dongaErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else if(errData[i].site == "서울신문") {
+					$("#td_seoulSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_seoulErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else if(errData[i].site == "YTN") {
+					$("#td_ytnSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_ytnErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else if(errData[i].site == "세계일보") {
+					$("#td_segyeSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_segyeErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else if(errData[i].site == "한겨례") {
+					$("#td_hangyeoryeSucc").html(errData[i].successAcc+"개 성공");
+					$("#td_hangyeoryeErr").html(errData[i].errorAcc+"개 실패");
+				}
+				else alert("그런게 있을리가 없어");
+			}
+			$("#td_errCheckTime").html("최근 수집 시간 : "+errData[0].dt);
 		},error: function(){
 			alert("크롤러 on/off 체크 실패");
 		}
@@ -189,13 +213,13 @@ setInterval(function errCnt(){
 	</colgroup>
 	<tbody>
 		<tr class='active'><td colspan='3' style='text-align:center;'>크롤링 에러 확인</td></tr>
-		<tr><td style='padding-left:20px;'>조선일보</td><td style="text-align:center;">1</td><td style="text-align:center;" id="td_chosunErr">1</td></tr>
-		<tr><td style='padding-left:20px;'>동아일보</td><td style="text-align:center;">2</td><td style="text-align:center;" id="td_dongaErr">1</td></tr>
-		<tr><td style='padding-left:20px;'>서울신문</td><td style="text-align:center;">3</td><td style="text-align:center;" id="td_seoulErr">1</td></tr>
-		<tr><td style='padding-left:20px;'>YTN</td><td style="text-align:center;">4</td><td style="text-align:center;" id="td_ytnErr">1</td></tr>
-		<tr><td style='padding-left:20px;'>세계일보</td><td style="text-align:center;">5</td><td style="text-align:center;" id="td_segyeErr">1</td></tr>
-		<tr><td style='padding-left:20px;'>한겨례</td><td style="text-align:center;">170개 성공</td><td style="text-align:center;" id="td_hangyeoryeErr">1개 실패</td></tr>
-		<tr><td colspan='3' style='border-top:1px solid;text-align:right' id="td_errCheckTime">최근 수집 시간 : </td></tr>
+		<tr><td style='padding-left:20px;'>조선일보</td><td id="td_chosunSucc" style="text-align:right;padding-right:5px;"></td><td id="td_chosunErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>동아일보</td><td id="td_dongaSucc" style="text-align:right;padding-right:5px;"></td><td id="td_dongaErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>서울신문</td><td id="td_seoulSucc" style="text-align:right;padding-right:5px;"></td><td id="td_seoulErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>YTN</td><td id="td_ytnSucc" style="text-align:right;padding-right:5px;"></td><td id="td_ytnErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>세계일보</td><td id="td_segyeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_segyeErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>한겨례</td><td id="td_hangyeoryeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_hangyeoryeErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td colspan='3' style='border-top:1px solid;text-align:right' id="td_errCheckTime"></td></tr>
 	</tbody>
 	</table>
 	
@@ -216,7 +240,7 @@ setInterval(function errCnt(){
 		<tr><td style='padding-left:20px;'>YTN</td><td>+4</td></tr>
 		<tr><td style='padding-left:20px;'>세계일보</td><td>+5</td></tr>
 		<tr><td style='padding-left:20px;'>한겨례</td><td>+1</td></tr>
-		<tr><td colspan='2' style='border-top:1px solid;text-align:right' id="td_">최근 수집 시간 : </td></tr>
+		<tr><td colspan='2' style='border-top:1px solid;text-align:right' id="td_"></td></tr>
 	</tbody>
 	</table>
 	

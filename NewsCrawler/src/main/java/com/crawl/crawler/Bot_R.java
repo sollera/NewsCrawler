@@ -25,11 +25,11 @@ public class Bot_R {
 	public void crawlingBot(int sleepSec) {
 		
 		if(sleepSec == 0) {	//크롤링 서버 종료
-			
+			System.out.println("끄러 오긴 했음.");
     		execEnd();	//쓰레드 강제 종료
     		
     		crawlerStop();
-    		
+    		System.out.println("끄고 갔음.");
     	}else {	//크롤링 서버 구동
     		
     		execEnd();	//크롤러가 돌아가는 중인데 다시 돌릴 경우를 대비한 쓰레드 강제 종료
@@ -384,7 +384,7 @@ public class Bot_R {
     
     private void crawlerStop() {
 		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy/MM/dd kk:mm:ss");
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     	try {
 	    	Connection conn2 = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
 			Statement stmt2 = conn2.createStatement();
@@ -409,7 +409,7 @@ public class Bot_R {
     }
     private void updateTime(String site) {
     	long time = System.currentTimeMillis();
-    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy/MM/dd kk:mm:ss");
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt1 = conn.createStatement();
@@ -423,7 +423,7 @@ public class Bot_R {
     
     private void errCntUpdate(String site,int success,int error) {
     	long time = System.currentTimeMillis();
-    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd");
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt1 = conn.createStatement();
