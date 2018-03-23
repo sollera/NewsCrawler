@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.crawl.crawler.Bot_R;
+import com.crawl.crawler.Crawler_R;
 import com.crawl.crawler.NewsBot;
 import com.crawl.dao.NewsDAO;
 import com.crawl.dto.newsVO;

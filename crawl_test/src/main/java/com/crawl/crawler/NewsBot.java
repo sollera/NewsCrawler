@@ -25,7 +25,7 @@ public class NewsBot {
 	private ScheduledThreadPoolExecutor exec5;	 // NewDaily 쓰레드
 	
 	private long time = System.currentTimeMillis(); 
-	private SimpleDateFormat dayTime = new SimpleDateFormat("yyyy/mm/dd hh:mm");
+	private SimpleDateFormat dayTime = new SimpleDateFormat("yyyy/MM/dd kk:mm");
     
     public void crawlingBot(int sleepSec) {
     	
