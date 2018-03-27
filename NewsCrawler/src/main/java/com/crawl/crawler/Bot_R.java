@@ -3,6 +3,7 @@ package com.crawl.crawler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,16 +26,17 @@ public class Bot_R {
 	public void crawlingBot(int sleepSec) {
 		
 		if(sleepSec == 0) {	//크롤링 서버 종료
-			System.out.println("끄러 오긴 했음.");
+			
     		execEnd();	//쓰레드 강제 종료
     		
     		crawlerStop();
-    		System.out.println("끄고 갔음.");
+    		
     	}else {	//크롤링 서버 구동
     		
     		execEnd();	//크롤러가 돌아가는 중인데 다시 돌릴 경우를 대비한 쓰레드 강제 종료
-        	
     		execStart();	//쓰레드 초기화
+    		
+    		statusTbCheck();
     		crawlerStart(sleepSec);	//크롤러 작동 시작(지정한 주기로 무한반복)
     		
     	}
@@ -423,12 +425,12 @@ public class Bot_R {
     
     private void errCntUpdate(String site,int success,int error) {
     	long time = System.currentTimeMillis();
-    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd");
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt1 = conn.createStatement();
         	stmt1.execute("INSERT INTO crawlingLog(site,success,error,successAcc,errorAcc,dt)"
-        			+ " VALUES('"+site+"',"+success+","+error+",0,0,'"+dayTime.format(new Date(time)).toString()+"')"
+        			+ " VALUES('"+site+"',"+success+","+error+","+success+","+error+",'"+dayTime.format(new Date(time)).toString()+"')"
         			+ " ON DUPLICATE KEY UPDATE"
         			+ " success="+success+",error="+error+",successAcc=(successAcc+"+success+"),errorAcc=(errorAcc+"+error+")");	//크롤링 성공/실패 업데이트, 없으면 추가
 	    	stmt1.close();
@@ -450,6 +452,25 @@ public class Bot_R {
     	}catch(Exception e) {
     		System.out.println(e);
     	}
+    }
+    
+    private void statusTbCheck() {
+    	long time = System.currentTimeMillis();
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+    	try {
+    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
+    		Statement stmt = conn.createStatement();
+    		ResultSet rs = stmt.executeQuery("SELECT * from statusNews");
+    		if(rs.next() == false) {
+	    		Statement stmt1 = conn.createStatement();
+	        	stmt1.execute("INSERT INTO statusNews(chosun,donga,seoul,ytn,segye,hangyeorye,modifyTime) "
+	        			+ "VALUES(-1,-1,-1,-1,-1,-1,'"+dayTime.format(new Date(time)).toString()+"')");	//크롤링 상태 테이블 레코드 없을 시 추가
+		    	stmt1.close();
+    		}
+	    	rs.close();
+	    	stmt.close();
+	    	conn.close();
+    	}catch(Exception e) {}
     }
     
 }

@@ -26,7 +26,7 @@ setInterval(function(){
 			topSite += "<table border='0' align='center'>";
 			for(var i in data){
 				if(data[i].cnt != 0){
-					topSite += "<tr><td>"+num+". "+data[i].col+"</td><td align='right'>"+data[i].cnt+"</td></tr>";
+					topSite += "<tr><td>"+num+". "+data[i].col+"</td><td align='right'>&nbsp;"+data[i].cnt+"</td></tr>";
 					if(i == 2) break;
 				}else{
 					topSite += "<tr><td colspan='2'>기사 없음</td></tr>";
@@ -48,7 +48,7 @@ setInterval(function(){
 			topSite += "<table border='0' align='center'>";
 			for(var i in data){
 				if(data[i].cnt != 0){
-					topSite += "<tr><td>"+num+". "+data[i].col+"</td><td align='right'>"+data[i].cnt+"</td></tr>";
+					topSite += "<tr><td>"+num+". "+data[i].col+"</td><td align='right'>&nbsp;"+data[i].cnt+"</td></tr>";
 					if(i == 2) break;
 				}else{
 					topSite += "<tr><td colspan='2'>기사 없음</td></tr>";

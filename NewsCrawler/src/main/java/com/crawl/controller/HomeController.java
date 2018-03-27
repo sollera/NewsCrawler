@@ -61,8 +61,8 @@ public class HomeController {
 		
 		return "totalNews";
 	}
-	@RequestMapping(value = "/")
-	public String viewNewsList() {
+	@RequestMapping(value = {"/","/news"})
+	public String reNewsList() {
 		return "redirect:/news/1";
 	}
 	

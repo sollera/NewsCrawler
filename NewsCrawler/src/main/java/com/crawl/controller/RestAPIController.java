@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.crawl.crawler.Bot_R;
 import com.crawl.dao.NewsDAO;
 import com.crawl.dto.crawlingRatioVO;
+import com.crawl.dto.errLogVO;
 import com.crawl.dto.numberOfCasesVO;
 import com.crawl.dto.statusVO;
 
@@ -50,7 +51,10 @@ public class RestAPIController {
 		int onOff = 1;
 		statusVO vo = new statusVO();
 		vo = dao.selectStatus();
-		if(vo.getChosun() == -1 && vo.getDonga() == -1 && vo.getSeoul() == -1 && vo.getYtn() == -1 && vo.getSegye() == -1 && vo.getHangyeorye() == -1) onOff = -1;
+		if(vo == null) onOff = -1;
+		else {
+			if(vo.getChosun() == -1 && vo.getDonga() == -1 && vo.getSeoul() == -1 && vo.getYtn() == -1 && vo.getSegye() == -1 && vo.getHangyeorye() == -1) onOff = -1;
+		}
 		return onOff;
 	}
 	
@@ -68,6 +72,20 @@ public class RestAPIController {
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<crawlingRatioVO> errCnt(){
 		return dao.selectErrCnt();
+	}
+	
+	@RequestMapping("/newCnt.do")
+	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
+	public List<numberOfCasesVO> newCnt(){
+		List<numberOfCasesVO> listN = dao.newsCnt("site");
+		return listN;
+	}
+	
+	@RequestMapping("/errLog.do")
+	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
+	public List<errLogVO> newLog(){
+		List<errLogVO> listLog = dao.selectLog();
+		return listLog;
 	}
 	
 }

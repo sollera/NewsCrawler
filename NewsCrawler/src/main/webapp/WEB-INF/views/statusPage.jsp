@@ -15,6 +15,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <script>
+//interval time
+var time = 3000;
+
 //서버상태 ajax
 setInterval(function status(){
 	$.ajax({
@@ -74,12 +77,13 @@ setInterval(function status(){
 			$("#td_segye").html(segye);
 			$("#td_hangyeorye").html(hangyeorye);
 			$("#td_dbCheckTime").html("최근 수집 시간 : "+mTime);
-			
+
+			$("#td_newTime").html(mTime);
 		},error: function(){
 			alert("db 확인 ajax 에러");
 		}
 	});
-},1000);
+},time);
 
 //크롤러 켜져있는지 체크해서 버튼 값 반영
 var crawlerOn = "<button type='button' onclick='crawlerControll(&quot;on&quot;)'>Crawler On</button>&nbsp; &nbsp;<button type='button' disabled>Crawler Off</button>";
@@ -157,14 +161,136 @@ setInterval(function errCnt(){
 					$("#td_hangyeoryeSucc").html(errData[i].successAcc+"개 성공");
 					$("#td_hangyeoryeErr").html(errData[i].errorAcc+"개 실패");
 				}
-				else alert("그런게 있을리가 없어");
+				else alert("성공/실패 함수 수정 요망");
 			}
-			$("#td_errCheckTime").html("최근 수집 시간 : "+errData[0].dt);
+			var dtE = "";
+			if(errData[0] != null) dtE = "당일("+errData[0].dt+") 누적";
+			$("#td_errCheckTime").html(dtE);
 		},error: function(){
 			alert("크롤러 on/off 체크 실패");
 		}
 	});
-},5000);
+},time);
+
+var choNewCnt = 0; var dongNewCnt = 0; var seoNewCnt = 0; var ytnNewCnt = 0; var seNewCnt = 0; var hanNewCnt = 0; var dt = ""; var firstView = true;
+setInterval(function newCnt(){
+	$.ajax({
+		type: "get",
+		url: "/crawler/newCnt.do",
+		success: function(data){
+			var dtChange = false;
+			if(firstView == true){
+				for(var i in data){
+					if(data[i].col == "조선일보") {
+						choNewCnt = data[i].cnt;
+						$("#td_chosunNew").html(data[i].cnt);
+						$("#td_chosunTime").html($("#td_newTime").text());
+					}
+					else if(data[i].col == "동아일보") {
+						dongNewCnt = data[i].cnt;
+						$("#td_dongaNew").html(data[i].cnt);
+						$("#td_dongaTime").html($("#td_newTime").text());
+					}
+					else if(data[i].col == "서울신문") {
+						seoNewCnt = data[i].cnt;
+						$("#td_seoulNew").html(data[i].cnt);
+						$("#td_seoulTime").html($("#td_newTime").text());
+					}
+					else if(data[i].col == "YTN") {
+						ytnNewCnt = data[i].cnt;
+						$("#td_ytnNew").html(data[i].cnt);
+						$("#td_ytnTime").html($("#td_newTime").text());
+					}
+					else if(data[i].col == "세계일보") {
+						seNewCnt = data[i].cnt;
+						$("#td_segyeNew").html(data[i].cnt);
+						$("#td_segyeTime").html($("#td_newTime").text());
+					}
+					else if(data[i].col == "한겨례") {
+						hanNewCnt = data[i].cnt;
+						$("#td_hangyeoryeNew").html(data[i].cnt);
+						$("#td_hangyeoryeTime").html($("#td_newTime").text());
+					}
+					else alert("새 뉴스 함수 수정 요망");
+				}
+				firstView = false;
+				dt = $("#td_newTime").text();
+			}else{
+				for(var i in data){
+					if(data[i].col == "조선일보") {
+						if(data[i].cnt != choNewCnt){
+							$("#td_chosunNew").html("+"+(data[i].cnt*1 - choNewCnt*1));
+							choNewCnt = data[i].cnt;
+							$("#td_chosunTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else if(data[i].col == "동아일보") {
+						if(data[i].cnt != dongNewCnt){
+							$("#td_dongaNew").html("+"+(data[i].cnt*1 - dongNewCnt*1));
+							dongNewCnt = data[i].cnt;
+							$("#td_dongaTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else if(data[i].col == "서울신문") {
+						if(data[i].cnt != seoNewCnt){
+							$("#td_seoulNew").html("+"+(data[i].cnt*1 - seoNewCnt*1));
+							seoNewCnt = data[i].cnt;
+							$("#td_seoulTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else if(data[i].col == "YTN") {
+						if(data[i].cnt != ytnNewCnt){
+							$("#td_ytnNew").html("+"+(data[i].cnt*1 - ytnNewCnt*1));
+							ytnNewCnt = data[i].cnt;
+							$("#td_ytnTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else if(data[i].col == "세계일보") {
+						if(data[i].cnt != seNewCnt){
+							$("#td_segyeNew").html("+"+(data[i].cnt*1 - seNewCnt*1));
+							seNewCnt = data[i].cnt;
+							$("#td_segyeTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else if(data[i].col == "한겨례") {
+						if(data[i].cnt != hanNewCnt){
+							$("#td_hangyeoryeNew").html("+"+(data[i].cnt*1 - hanNewCnt*1));
+							hanNewCnt = data[i].cnt;
+							$("#td_hangyeoryeTime").html($("#td_newTime").text());
+							dtChange = true;
+						}
+					}
+					else alert("새 뉴스 함수 수정 요망");
+				}
+				if(dtChange == true) dt = $("#td_newTime").text();
+			}
+		},error: function(){
+			alert("새로 등록된 기사 체크 실패");
+		}
+	});
+},time);
+
+setInterval(function errCnt(){
+	$.ajax({
+		type: "get",
+		url: "/crawler/errLog.do",
+		success: function(errlog){
+			var log = "<div style='float:left'>** 뉴스 크롤러 동작 에러 로그(2018/03/26) **</div><div style='float:right'><button type='button'>전체 로그 보기</button></div><br /><br />";
+			for(var i in errlog){
+				log += errlog[i].errTime+" "+errlog[i].site+" 크롤러 봇 기동 중 "+errlog[i].error+" 에러 발생<br />";
+			}
+			if(errlog == null) log += "에러 발생 기록 없음<br />";
+			$("#div_errLog").html(log);
+		},error: function(){
+			alert("에러 로그 찾기 실패");
+		}
+	});
+},time);
 
 
 </script>
@@ -176,11 +302,11 @@ setInterval(function errCnt(){
 </div>
 <br />
 
-<div id="crawlerStartButton"></div>
+<div id="crawlerStartButton" style="margin-left:auto;margin-right:auto;width:200px;"></div>
 <script>onOff();</script>
 <br />
 
-<div style="margin-left:auto;margin-right:auto;width:960px;height:320px;">
+<div style="margin-left:auto;margin-right:auto;width:930px;height:320px;">
 
 	<div style='float:left;margin-left:20px;'>
 	
@@ -205,9 +331,9 @@ setInterval(function errCnt(){
 	
 	<div style='float:left;margin-left:20px;'>
 	
-	<table style='width:350px;' class='table'>
+	<table style='width:300px;' class='table'>
 	<colgroup>
-		<col width="150px">
+		<col width="100px">
 		<col width="100px">
 		<col width="100px">
 	</colgroup>
@@ -227,20 +353,21 @@ setInterval(function errCnt(){
 	
 	<div style='float:left;margin-left:20px;'>
 	
-	<table style='width:250px;' class='table'>
+	<table style='width:300px;' class='table'>
 	<colgroup>
-		<col width="200px">
-		<col width="50px">
+		<col width="100px">
+		<col width="30px">
+		<col width="170px">
 	</colgroup>
 	<tbody>
-		<tr class='active'><td colspan='2' style='text-align:center;'>새로 등록된 기사</td></tr>
-		<tr><td style='padding-left:20px;'>조선일보</td><td>+1</td></tr>
-		<tr><td style='padding-left:20px;'>동아일보</td><td>+20</td></tr>
-		<tr><td style='padding-left:20px;'>서울신문</td><td>+3</td></tr>
-		<tr><td style='padding-left:20px;'>YTN</td><td>+4</td></tr>
-		<tr><td style='padding-left:20px;'>세계일보</td><td>+5</td></tr>
-		<tr><td style='padding-left:20px;'>한겨례</td><td>+1</td></tr>
-		<tr><td colspan='2' style='border-top:1px solid;text-align:right' id="td_"></td></tr>
+		<tr class='active'><td colspan='3' style='text-align:center;'>새로 등록된 기사</td></tr>
+		<tr><td style='padding-left:20px;'>조선일보</td><td id="td_chosunNew"></td><td id="td_chosunTime"></td></tr>
+		<tr><td style='padding-left:20px;'>동아일보</td><td id="td_dongaNew"></td><td id="td_dongaTime"></td></tr>
+		<tr><td style='padding-left:20px;'>서울신문</td><td id="td_seoulNew"></td><td id="td_seoulTime"></td></tr>
+		<tr><td style='padding-left:20px;'>YTN</td><td id="td_ytnNew"></td><td id="td_ytnTime"></td></tr>
+		<tr><td style='padding-left:20px;'>세계일보</td><td id="td_segyeNew"></td><td id="td_segyeTime"></td></tr>
+		<tr style='border-bottom:1px solid;'><td style='padding-left:20px;'>한겨례</td><td id="td_hangyeoryeNew"></td><td id="td_hangyeoryeTime"></td></tr>
+		<tr><td colspan='3' style='text-align:right;display:none;' id="td_newTime"></td></tr>
 	</tbody>
 	</table>
 	
@@ -248,11 +375,7 @@ setInterval(function errCnt(){
 
 </div>
 
-<div style="width:960px;margin-left:auto;margin-right:auto;background:#D5D5D5;">
-
-에러 로그 ==> ajax 반영하기
-
-</div>
+<div id="div_errLog" style="width:1000px;margin-left:auto;margin-right:auto;background:#D5D5D5;min-height:300px;"></div>
 
 </body>
 </html>
