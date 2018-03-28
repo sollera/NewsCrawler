@@ -109,8 +109,15 @@ public class Crawler_R {
 					continue;
 				}
 				newsType = elNewsType.text().trim();
+				if(newsType.indexOf("- 조선닷컴 -") == -1) {
+					error++;	//에러 카운트
+					continue;
+				}
 				newsType = newsType.substring(newsType.indexOf("조선닷컴 -")+7).trim();
 				if(newsType.indexOf(" ") != -1) newsType = newsType.substring(0,newsType.indexOf(" ")).trim();
+				
+				newsType = typeConsistency(newsType);
+				
 				elNewsTitle = docNewsCon.select("header.news_title div.news_title_text h1").first();
 				if(elNewsTitle == null) {
 					error++;	//에러 카운트
@@ -179,12 +186,15 @@ public class Crawler_R {
 			for(Element linkDonga : newsLinksDonga) {
 				url = linkDonga.attr("abs:href").trim();
 				docNewsCon = Jsoup.connect(url).get();
-				elNewsType = docNewsCon.select("div.article_title a").first();
+				elNewsType = docNewsCon.select("div.article_title div.location a").first();
 				if(elNewsType == null) {
 					error++;	//에러 카운트
 					continue;
 				}
 				newsType = elNewsType.text().trim();
+				
+				newsType = typeConsistency(newsType);
+				
 				elNewsTitle = docNewsCon.select("div.article_title h2.title").first();
 				if(elNewsTitle == null) {
 					error++;	//에러 카운트
@@ -230,7 +240,7 @@ public class Crawler_R {
 		Document docNewsCon;
 		Element elNewsTitle;
 		Element elNewsTime;
-		String newsType;
+		String newsType = "";
 		String newsTitle;
 		String url;
 		String uploadTime = "";
@@ -254,7 +264,13 @@ public class Crawler_R {
 				for(Element linkSeoul : newsLinksSeoul) {
 					url = linkSeoul.attr("abs:href").trim();
 					docNewsCon = Jsoup.connect(url).get();
-					newsType = sections[s];
+					if(s == 0) newsType = "정치";
+					else if(s == 1) newsType = "경제";
+					else if(s == 2) newsType = "사회";
+					else if(s == 3) newsType = "오피니언";
+					else if(s == 4) newsType = "스포츠";
+					else if(s == 5) newsType = "연예";
+					else newsType = "기타";
 					elNewsTitle = docNewsCon.select("div.title div.title_inner_art div.article_tit h1.atit2").first();
 					if(elNewsTitle == null) {
 						error++;	//에러 카운트
@@ -323,9 +339,10 @@ public class Crawler_R {
 					url = linkYtn.attr("abs:href").trim();
 					docNewsCon = Jsoup.connect(url).get();
 					if(sections[s].equals("0101")) newsType = "정치";
-					if(sections[s].equals("0102")) newsType = "경제";
-					if(sections[s].equals("0103")) newsType = "사회";
-					if(sections[s].equals("0106")) newsType = "문화";
+					else if(sections[s].equals("0102")) newsType = "경제";
+					else if(sections[s].equals("0103")) newsType = "사회";
+					else if(sections[s].equals("0106")) newsType = "문화";
+					else newsType = "기타";
 					elNewsTitle = docNewsCon.select("div#czone div#zone1 div.article_tit").first();
 					if(elNewsTitle == null) {
 						error++;	//에러 카운트
@@ -400,10 +417,11 @@ public class Crawler_R {
 					url = linkSegye.attr("abs:href").trim();
 					docNewsCon = Jsoup.connect(url).get();
 					if(sections[s].equals("0101010000000")) newsType = "정치";
-					if(sections[s].equals("0101030000000")) newsType = "경제";
-					if(sections[s].equals("0101080000000")) newsType = "사회";
-					if(sections[s].equals("0101050000000")) newsType = "문화";
-					if(sections[s].equals("0101100300000")) newsType = "사설";
+					else if(sections[s].equals("0101030000000")) newsType = "경제";
+					else if(sections[s].equals("0101080000000")) newsType = "사회";
+					else if(sections[s].equals("0101050000000")) newsType = "문화";
+					else if(sections[s].equals("0101100300000")) newsType = "사설";
+					else newsType= "기타";
 					elNewsTitle = docNewsCon.select("div#content div.news_article div.article_head div.subject h1.headline").first();
 					if(elNewsTitle == null) {
 						error++;	//에러 카운트
@@ -479,11 +497,12 @@ public class Crawler_R {
 					url = linkHangyeorye.attr("abs:href").trim();
 					docNewsCon = Jsoup.connect(url).get();
 					if(sections[s].equals("politics/politics_general")) newsType = "정치";
-					if(sections[s].equals("economy/economy_general")) newsType = "경제";
-					if(sections[s].equals("society/society_general")) newsType = "사회";
-					if(sections[s].equals("culture/culture_general")) newsType = "문화";
-					if(sections[s].equals("opinion/editorial")) newsType = "사설";
-					if(sections[s].equals("sports/sports_general")) newsType = "스포츠";
+					else if(sections[s].equals("economy/economy_general")) newsType = "경제";
+					else if(sections[s].equals("society/society_general")) newsType = "사회";
+					else if(sections[s].equals("culture/culture_general")) newsType = "문화";
+					else if(sections[s].equals("opinion/editorial")) newsType = "사설";
+					else if(sections[s].equals("sports/sports_general")) newsType = "스포츠";
+					else newsType = "기타";
 					elNewsTitle = docNewsCon.select("div.article-head h4 span.title").first();
 					if(elNewsTitle == null) {
 						error++;	//에러 카운트
@@ -515,6 +534,20 @@ public class Crawler_R {
 		int[] cnt = {success,error};
 		setHangyeoryeCnt(cnt);	
 		return hangyeoryeNews;
+	}
+	
+	private String typeConsistency(String type) {
+		String convertedType = "";
+		if(type.equals("정치") || type.equals("경제") || type.equals("사회") || type.equals("문화") || type.equals("오피니언")) convertedType = type;
+		else {
+			if(type.equals("사고")) convertedType = "사회";
+			else if(type.contains("사설") || type.contains("컬럼")) convertedType = "오피니언";
+			else if(type.contains("스포츠") && type.contains("연예")) convertedType = "스포츠ㆍ연예";
+			else convertedType = "기타";
+			//새로운 카테고리 발견 시 추가할 것
+		}
+		
+		return convertedType;
 	}
 	
 }

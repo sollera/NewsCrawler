@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -85,7 +86,7 @@ public class Bot_R {
                 		else if(chosun.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(chosun.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(chosun.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(chosun.get(i)[1].equals("")) System.out.println();
+                		else if(chosun.get(i)[1].equals("")) category = "기타";
                 		else category = chosun.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -138,7 +139,7 @@ public class Bot_R {
                 		else if(donga.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(donga.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(donga.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(donga.get(i)[1].equals("")) System.out.println();
+                		else if(donga.get(i)[1].equals("")) category = "기타";
                 		else category = donga.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -191,7 +192,7 @@ public class Bot_R {
                 		else if(seoul.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(seoul.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(seoul.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(seoul.get(i)[1].equals("")) System.out.println();
+                		else if(seoul.get(i)[1].equals("")) category = "기타";
                 		else category = seoul.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -244,7 +245,7 @@ public class Bot_R {
                 		else if(ytn.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(ytn.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(ytn.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(ytn.get(i)[1].equals("")) System.out.println();
+                		else if(ytn.get(i)[1].equals("")) category = "기타";
                 		else category = ytn.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -298,7 +299,7 @@ public class Bot_R {
                 		else if(segye.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(segye.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(segye.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(segye.get(i)[1].equals("")) System.out.println();
+                		else if(segye.get(i)[1].equals("")) category = "기타";
                 		else category = segye.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -351,7 +352,7 @@ public class Bot_R {
                 		else if(hangyeorye.get(i)[1].equals("사설")) category = "오피니언";
                 		else if(hangyeorye.get(i)[1].equals("IT/의학")) category = "사회";
                 		else if(hangyeorye.get(i)[1].equals("사람속으로")) category = "사회";
-                		else if(hangyeorye.get(i)[1].equals("")) System.out.println();
+                		else if(hangyeorye.get(i)[1].equals("")) category = "기타";
                 		else category = hangyeorye.get(i)[1];
                 		
                 		stmt.setString(2, category);
@@ -408,6 +409,8 @@ public class Bot_R {
     	}catch(Exception e) {
     		errLog(site,e.toString());
     	}
+    	
+    	if(status == 2) updateTimeLog(site);
     }
     private void updateTime(String site) {
     	long time = System.currentTimeMillis();
@@ -471,6 +474,44 @@ public class Bot_R {
 	    	stmt.close();
 	    	conn.close();
     	}catch(Exception e) {}
+    }
+    
+    private void updateTimeLog(String site) {
+    	String site1 = "";
+    	if(site.equals("chosun")) site1 = "조선일보";
+    	else if(site.equals("donga")) site1 = "동아일보";
+    	else if(site.equals("seoul")) site1 = "서울신문";
+    	else if(site.equals("ytn")) site1 = "YTN";
+    	else if(site.equals("segye")) site1 = "세계일보";
+    	else if(site.equals("hangyeorye")) site1 = "한겨례";
+    	else System.out.println("그럴리 읍다");    	
+    	
+    	long time = System.currentTimeMillis();
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+    	try {
+    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
+    		Statement stmt = conn.createStatement();
+    		String query = "SELECT count(title) FROM news WHERE site='"+site1+"'";
+    		ResultSet rs = stmt.executeQuery(query);
+    		if(rs.next()) {
+				int cnt = rs.getInt(1);
+				Statement stmt1 = conn.createStatement();
+				Statement stmt2 = conn.createStatement();
+				ResultSet rs1 = stmt2.executeQuery("SELECT allCnt FROM newsUpdateLog WHERE site='"+site1+"' ORDER BY no desc LIMIT 1");
+				int cnt1 = 0;
+				if(rs1.next()) cnt1 = rs1.getInt(1);
+				if(cnt1 != cnt) {
+					stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+(cnt-cnt1)+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
+				}
+				stmt1.close();
+    		}
+	    	rs.close();
+	    	stmt.close();
+	    	conn.close();
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
     }
     
 }

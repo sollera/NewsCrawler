@@ -10,6 +10,7 @@
 			<typeAlias type="com.crawl.dto.crawlingRatioVO" alias="ratioVO"/>
 			<typeAlias type="com.crawl.dto.numberOfCasesVO" alias="cntVO"/>
 			<typeAlias type="com.crawl.dto.errLogVO" alias="logVO"/>
+			<typeAlias type="com.crawl.dto.updateCntVO" alias="updateCntVO"/>
 		</typeAliases>
 		
 	</configuration>

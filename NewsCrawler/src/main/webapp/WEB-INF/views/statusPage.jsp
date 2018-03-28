@@ -16,7 +16,7 @@
 
 <script>
 //interval time
-var time = 3000;
+var time = 5000;
 
 //서버상태 ajax
 setInterval(function status(){
@@ -78,7 +78,6 @@ setInterval(function status(){
 			$("#td_hangyeorye").html(hangyeorye);
 			$("#td_dbCheckTime").html("최근 수집 시간 : "+mTime);
 
-			$("#td_newTime").html(mTime);
 		},error: function(){
 			alert("db 확인 ajax 에러");
 		}
@@ -172,102 +171,37 @@ setInterval(function errCnt(){
 	});
 },time);
 
-var choNewCnt = 0; var dongNewCnt = 0; var seoNewCnt = 0; var ytnNewCnt = 0; var seNewCnt = 0; var hanNewCnt = 0; var dt = ""; var firstView = true;
 setInterval(function newCnt(){
 	$.ajax({
 		type: "get",
 		url: "/crawler/newCnt.do",
 		success: function(data){
-			var dtChange = false;
-			if(firstView == true){
-				for(var i in data){
-					if(data[i].col == "조선일보") {
-						choNewCnt = data[i].cnt;
-						$("#td_chosunNew").html(data[i].cnt);
-						$("#td_chosunTime").html($("#td_newTime").text());
-					}
-					else if(data[i].col == "동아일보") {
-						dongNewCnt = data[i].cnt;
-						$("#td_dongaNew").html(data[i].cnt);
-						$("#td_dongaTime").html($("#td_newTime").text());
-					}
-					else if(data[i].col == "서울신문") {
-						seoNewCnt = data[i].cnt;
-						$("#td_seoulNew").html(data[i].cnt);
-						$("#td_seoulTime").html($("#td_newTime").text());
-					}
-					else if(data[i].col == "YTN") {
-						ytnNewCnt = data[i].cnt;
-						$("#td_ytnNew").html(data[i].cnt);
-						$("#td_ytnTime").html($("#td_newTime").text());
-					}
-					else if(data[i].col == "세계일보") {
-						seNewCnt = data[i].cnt;
-						$("#td_segyeNew").html(data[i].cnt);
-						$("#td_segyeTime").html($("#td_newTime").text());
-					}
-					else if(data[i].col == "한겨례") {
-						hanNewCnt = data[i].cnt;
-						$("#td_hangyeoryeNew").html(data[i].cnt);
-						$("#td_hangyeoryeTime").html($("#td_newTime").text());
-					}
-					else alert("새 뉴스 함수 수정 요망");
+			for(var i in data){
+				if(data[i].site == "조선일보") {
+					$("#td_chosunNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_chosunTime").html(data[i].updateTime);
 				}
-				firstView = false;
-				dt = $("#td_newTime").text();
-			}else{
-				for(var i in data){
-					if(data[i].col == "조선일보") {
-						if(data[i].cnt != choNewCnt){
-							$("#td_chosunNew").html("+"+(data[i].cnt*1 - choNewCnt*1));
-							choNewCnt = data[i].cnt;
-							$("#td_chosunTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else if(data[i].col == "동아일보") {
-						if(data[i].cnt != dongNewCnt){
-							$("#td_dongaNew").html("+"+(data[i].cnt*1 - dongNewCnt*1));
-							dongNewCnt = data[i].cnt;
-							$("#td_dongaTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else if(data[i].col == "서울신문") {
-						if(data[i].cnt != seoNewCnt){
-							$("#td_seoulNew").html("+"+(data[i].cnt*1 - seoNewCnt*1));
-							seoNewCnt = data[i].cnt;
-							$("#td_seoulTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else if(data[i].col == "YTN") {
-						if(data[i].cnt != ytnNewCnt){
-							$("#td_ytnNew").html("+"+(data[i].cnt*1 - ytnNewCnt*1));
-							ytnNewCnt = data[i].cnt;
-							$("#td_ytnTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else if(data[i].col == "세계일보") {
-						if(data[i].cnt != seNewCnt){
-							$("#td_segyeNew").html("+"+(data[i].cnt*1 - seNewCnt*1));
-							seNewCnt = data[i].cnt;
-							$("#td_segyeTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else if(data[i].col == "한겨례") {
-						if(data[i].cnt != hanNewCnt){
-							$("#td_hangyeoryeNew").html("+"+(data[i].cnt*1 - hanNewCnt*1));
-							hanNewCnt = data[i].cnt;
-							$("#td_hangyeoryeTime").html($("#td_newTime").text());
-							dtChange = true;
-						}
-					}
-					else alert("새 뉴스 함수 수정 요망");
+				else if(data[i].site == "동아일보") {
+					$("#td_dongaNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_dongaTime").html(data[i].updateTime);
 				}
-				if(dtChange == true) dt = $("#td_newTime").text();
+				else if(data[i].site == "서울신문") {
+					$("#td_seoulNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_seoulTime").html(data[i].updateTime);
+				}
+				else if(data[i].site == "YTN") {
+					$("#td_ytnNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_ytnTime").html(data[i].updateTime);
+				}
+				else if(data[i].site == "세계일보") {
+					$("#td_segyeNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_segyeTime").html(data[i].updateTime);
+				}
+				else if(data[i].site == "한겨례") {
+					$("#td_hangyeoryeNew").html("+"+data[i].cnt+"("+data[i].allCnt+")");
+					$("#td_hangyeoryeTime").html(data[i].updateTime);
+				}
+				else alert("새 뉴스 함수 수정 요망");
 			}
 		},error: function(){
 			alert("새로 등록된 기사 체크 실패");
@@ -280,7 +214,7 @@ setInterval(function errCnt(){
 		type: "get",
 		url: "/crawler/errLog.do",
 		success: function(errlog){
-			var log = "<div style='float:left'>** 뉴스 크롤러 동작 에러 로그(2018/03/26) **</div><div style='float:right'><button type='button'>전체 로그 보기</button></div><br /><br />";
+			var log = "&nbsp; ** 뉴스 크롤러 동작 에러 로그("+today()+") **<br /><br />";
 			for(var i in errlog){
 				log += errlog[i].errTime+" "+errlog[i].site+" 크롤러 봇 기동 중 "+errlog[i].error+" 에러 발생<br />";
 			}
@@ -291,6 +225,22 @@ setInterval(function errCnt(){
 		}
 	});
 },time);
+
+function today(){
+	var today = new Date();
+	var yyyy = today.getFullYear();
+	var MM = today.getMonth()+1; //January is 0!
+	var dd = today.getDate();
+	
+	if(dd<10) {
+	    dd='0'+dd
+	} 
+	if(MM<10) {
+	    MM='0'+MM
+	} 
+	
+	return yyyy+"/"+MM+"/"+dd;
+}
 
 
 </script>
@@ -306,7 +256,7 @@ setInterval(function errCnt(){
 <script>onOff();</script>
 <br />
 
-<div style="margin-left:auto;margin-right:auto;width:930px;height:320px;">
+<div style="margin-left:auto;margin-right:auto;width:1000px;height:320px;">
 
 	<div style='float:left;margin-left:20px;'>
 	
@@ -339,12 +289,12 @@ setInterval(function errCnt(){
 	</colgroup>
 	<tbody>
 		<tr class='active'><td colspan='3' style='text-align:center;'>크롤링 에러 확인</td></tr>
-		<tr><td style='padding-left:20px;'>조선일보</td><td id="td_chosunSucc" style="text-align:right;padding-right:5px;"></td><td id="td_chosunErr" style="text-align:right;padding-right:5px;"></td></tr>
-		<tr><td style='padding-left:20px;'>동아일보</td><td id="td_dongaSucc" style="text-align:right;padding-right:5px;"></td><td id="td_dongaErr" style="text-align:right;padding-right:5px;"></td></tr>
-		<tr><td style='padding-left:20px;'>서울신문</td><td id="td_seoulSucc" style="text-align:right;padding-right:5px;"></td><td id="td_seoulErr" style="text-align:right;padding-right:5px;"></td></tr>
-		<tr><td style='padding-left:20px;'>YTN</td><td id="td_ytnSucc" style="text-align:right;padding-right:5px;"></td><td id="td_ytnErr" style="text-align:right;padding-right:5px;"></td></tr>
-		<tr><td style='padding-left:20px;'>세계일보</td><td id="td_segyeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_segyeErr" style="text-align:right;padding-right:5px;"></td></tr>
-		<tr><td style='padding-left:20px;'>한겨례</td><td id="td_hangyeoryeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_hangyeoryeErr" style="text-align:right;padding-right:5px;"></td></tr>
+		<tr><td style='padding-left:20px;'>조선일보</td><td id="td_chosunSucc" style="text-align:right;padding-right:5px;"></td><td id="td_chosunErr" style="text-align:right;padding-right:10px;"></td></tr>
+		<tr><td style='padding-left:20px;'>동아일보</td><td id="td_dongaSucc" style="text-align:right;padding-right:5px;"></td><td id="td_dongaErr" style="text-align:right;padding-right:10px;"></td></tr>
+		<tr><td style='padding-left:20px;'>서울신문</td><td id="td_seoulSucc" style="text-align:right;padding-right:5px;"></td><td id="td_seoulErr" style="text-align:right;padding-right:10px;"></td></tr>
+		<tr><td style='padding-left:20px;'>YTN</td><td id="td_ytnSucc" style="text-align:right;padding-right:5px;"></td><td id="td_ytnErr" style="text-align:right;padding-right:10px;"></td></tr>
+		<tr><td style='padding-left:20px;'>세계일보</td><td id="td_segyeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_segyeErr" style="text-align:right;padding-right:10px;"></td></tr>
+		<tr><td style='padding-left:20px;'>한겨례</td><td id="td_hangyeoryeSucc" style="text-align:right;padding-right:5px;"></td><td id="td_hangyeoryeErr" style="text-align:right;padding-right:10px;"></td></tr>
 		<tr><td colspan='3' style='border-top:1px solid;text-align:right' id="td_errCheckTime"></td></tr>
 	</tbody>
 	</table>
@@ -353,10 +303,10 @@ setInterval(function errCnt(){
 	
 	<div style='float:left;margin-left:20px;'>
 	
-	<table style='width:300px;' class='table'>
+	<table style='width:370px;' class='table'>
 	<colgroup>
 		<col width="100px">
-		<col width="30px">
+		<col width="100px">
 		<col width="170px">
 	</colgroup>
 	<tbody>
@@ -375,7 +325,7 @@ setInterval(function errCnt(){
 
 </div>
 
-<div id="div_errLog" style="width:1000px;margin-left:auto;margin-right:auto;background:#D5D5D5;min-height:300px;"></div>
+<div id="div_errLog" style="width:1000px;margin-left:auto;margin-right:auto;background:#D5D5D5;min-height:300px;padding:5px;"></div>
 
 </body>
 </html>

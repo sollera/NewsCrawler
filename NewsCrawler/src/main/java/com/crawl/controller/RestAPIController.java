@@ -15,6 +15,7 @@ import com.crawl.dto.crawlingRatioVO;
 import com.crawl.dto.errLogVO;
 import com.crawl.dto.numberOfCasesVO;
 import com.crawl.dto.statusVO;
+import com.crawl.dto.updateCntVO;
 
 
 @RestController
@@ -76,8 +77,8 @@ public class RestAPIController {
 	
 	@RequestMapping("/newCnt.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
-	public List<numberOfCasesVO> newCnt(){
-		List<numberOfCasesVO> listN = dao.newsCnt("site");
+	public List<updateCntVO> newCnt(){
+		List<updateCntVO> listN = dao.updateLog();
 		return listN;
 	}
 	

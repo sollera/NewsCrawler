@@ -1,6 +1,7 @@
 package com.crawl.dao;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.crawl.dto.errLogVO;
 import com.crawl.dto.newsVO;
 import com.crawl.dto.numberOfCasesVO;
 import com.crawl.dto.statusVO;
+import com.crawl.dto.updateCntVO;
 
 @Repository
 public class NewsDAOImpl implements NewsDAO {
@@ -77,6 +79,152 @@ public class NewsDAOImpl implements NewsDAO {
 		String today = dayTimeForURL.format(time);
 		
 		return sqlSession.selectList(Namespace+".errLog",today);
+	}
+
+	@Override
+	public List<newsVO> selectNews1(String site,String type,int first) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String date = dayTimeForURL.format(time);
+
+		String exceptEtc = "";
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("firstNews", first);
+		map.put("today",date);
+		map.put("site", site);
+		if(type.indexOf("기타") == -1) {
+			map.put("type", type);
+			return sqlSession.selectList(Namespace+".specificNews3",map);
+		}else {
+			if(type.indexOf(",") == -1) {
+				map.put("type","");
+			}else {
+				exceptEtc = type.substring(0,type.indexOf(",'기타"));
+				map.put("type", exceptEtc);
+			}
+			return sqlSession.selectList(Namespace+".specificNews5",map);
+		}
+	}
+
+	@Override
+	public List<newsVO> selectNews2(String site,int first) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String date = dayTimeForURL.format(time);
+				
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("firstNews", first);
+		map.put("today",date);
+		map.put("site", site);
+		return sqlSession.selectList(Namespace+".specificNews1",map);
+	}
+
+	@Override
+	public List<newsVO> selectNews3(String type,int first) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String date = dayTimeForURL.format(time);
+
+		String exceptEtc = "";
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("firstNews", first);
+		map.put("today",date);
+		if(type.indexOf("기타") == -1) {
+			map.put("type", type);
+			return sqlSession.selectList(Namespace+".specificNews2",map);
+		}else {
+			if(type.indexOf(",") == -1) {
+				map.put("type","");
+			}else {
+				exceptEtc = type.substring(0,type.indexOf(",'기타"));
+				map.put("type", exceptEtc);
+			}
+			return sqlSession.selectList(Namespace+".specificNews4",map);
+		}
+	}
+
+	@Override
+	public int totalNewsCnt1(String site, String type) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+
+		String exceptEtc = "";
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("today", today);
+		map.put("site", site);
+		if(type.indexOf("기타") == -1) {
+			map.put("type", type);
+			return sqlSession.selectOne(Namespace+".newsCnt3",map);
+		}else {
+			if(type.indexOf(",") == -1) {
+				map.put("type","");
+			}else {
+				exceptEtc = type.substring(0,type.indexOf(",'기타"));
+				map.put("type", exceptEtc);
+			}
+			return sqlSession.selectOne(Namespace+".newsCnt5",map);
+		}
+	}
+
+	@Override
+	public int totalNewsCnt2(String site) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("today", today);
+		map.put("site", site);
+		
+		return sqlSession.selectOne(Namespace+".newsCnt1",map);
+	}
+
+	@Override
+	public int totalNewsCnt3(String type) {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+
+		String exceptEtc = "";
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("today", today);
+		if(type.indexOf("기타") == -1) {
+			map.put("type", type);
+			return sqlSession.selectOne(Namespace+".newsCnt2",map);
+		}else {
+			if(type.indexOf(",") == -1) {
+				map.put("type","");
+			}else {
+				exceptEtc = type.substring(0,type.indexOf(",'기타"));
+				map.put("type", exceptEtc);
+			}
+			return sqlSession.selectOne(Namespace+".newsCnt4",map);
+		}
+	}
+
+	@Override
+	public List<updateCntVO> updateLog() {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+
+		ArrayList<updateCntVO> updateN = new ArrayList<updateCntVO>();
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("today", today);
+		String[] site = {"조선일보","동아일보","서울신문","YTN","세계일보","한겨례"};
+		for(int i = 0; i < site.length; i++) {
+			map.put("site", site[i]);
+			updateCntVO updateN1 = sqlSession.selectOne(Namespace+".cntNewNews",map);
+			updateN.add(updateN1);
+		}
+		
+		return updateN;
 	}
 	
 }
