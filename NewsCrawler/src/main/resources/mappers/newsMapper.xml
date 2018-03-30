@@ -26,7 +26,7 @@
 		SELECT type col,count(title) cnt FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') GROUP BY col ORDER BY cnt DESC;
 	</select>
 	
-	<!-- 필터 걸려 있을 때 기사 조회 -->
+	<!-- 필터O,검색X 기사 조회 -->
 	<select id="specificNews1" resultType="newsVO" parameterType="hashmap">
 		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) ORDER BY enrollDT desc LIMIT #{firstNews},20;
 	</select>
@@ -37,12 +37,12 @@
 		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and type in(#{type}) ORDER BY enrollDT desc LIMIT #{firstNews},20;
 	</select>
 	<select id="specificNews4" resultType="newsVO" parameterType="hashmap">
-		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예')) ORDER BY enrollDT desc LIMIT #{firstNews},20;
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) ORDER BY enrollDT desc LIMIT #{firstNews},20;
 	</select>
 	<select id="specificNews5" resultType="newsVO" parameterType="hashmap">
-		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예')) ORDER BY enrollDT desc LIMIT #{firstNews},20;
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) ORDER BY enrollDT desc LIMIT #{firstNews},20;
 	</select>
-	<!-- 필터 걸려있을 때 전체 기사 수 -->
+	<!-- 필터O,검색X 전체 기사 수 -->
 	<select id="newsCnt1" resultType="java.lang.Integer" parameterType="hashmap">
 		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}); 
 	</select>
@@ -53,10 +53,52 @@
 		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and type in(#{type}); 
 	</select>
 	<select id="newsCnt4" resultType="java.lang.Integer" parameterType="hashmap">
-		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예')); 
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')); 
 	</select>
 	<select id="newsCnt5" resultType="java.lang.Integer" parameterType="hashmap">
-		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예')); 
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')); 
+	</select>
+	
+	<!-- 필터X,검색O 기사 조회 -->
+	<select id="searchNews" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<!-- 필터X,검색O 전체 기사 수 -->
+	<select id="searchCnt" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and title REGEXP #{titleSearch};
+	</select>
+	
+	<!-- 필터O,검색O 기사 조회 -->
+	<select id="allConditionNews1" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<select id="allConditionNews2" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and type in(#{type}) and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<select id="allConditionNews3" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and type in(#{type}) and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<select id="allConditionNews4" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<select id="allConditionNews5" resultType="newsVO" parameterType="hashmap">
+		SELECT * FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) and title REGEXP #{titleSearch} ORDER BY enrollDT desc LIMIT #{firstNews},20;
+	</select>
+	<!-- 필터O,검색O 전체 기사 수 -->
+	<select id="allConditionCnt1" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and title REGEXP #{titleSearch}; 
+	</select>
+	<select id="allConditionCnt2" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and type in(#{type}) and title REGEXP #{titleSearch}; 
+	</select>
+	<select id="allConditionCnt3" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and type in(#{type}) and title REGEXP #{titleSearch}; 
+	</select>
+	<select id="allConditionCnt4" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) and title REGEXP #{titleSearch}; 
+	</select>
+	<select id="allConditionCnt5" resultType="java.lang.Integer" parameterType="hashmap">
+		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) and title REGEXP #{titleSearch}; 
 	</select>
 	
 	

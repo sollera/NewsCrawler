@@ -30,31 +30,83 @@ public class HomeController {
 		String errMsg = "";
 		
 		int allNewsCnt = 0;
-		if(request.getParameter("s") == null && request.getParameter("c") == null) allNewsCnt = dao.totalNewsCnt();	//전체 뉴스 수
-		
-		//필터 있을 때
 		String typeS = "";
 		String typeC = "";
-		if(request.getParameter("s") != null) {
-			if(request.getParameter("c") != null) {	//site,type 둘다 필터 적용
-				typeS = request.getParameter("s");
-				typeS = typeS.replaceAll("-", "','");
+		//전체 뉴스 기사 수 받기 ----------------------//
+		
+		//필터 없고 검색도 아닐 때
+//		if(request.getParameter("s") == null && request.getParameter("c") == null) allNewsCnt = dao.totalNewsCnt();
+				
+		if(request.getParameter("w") == null) {	//검색X
+			//필터O , 검색X
+			if(request.getParameter("s") != null) {
+				if(request.getParameter("c") != null) {
+					//신문사,카테고리 필터 둘다 적용
+					typeS = request.getParameter("s");
+					typeS = typeS.replaceAll("-", "','");
+					typeC = request.getParameter("c");
+					typeC = typeC.replaceAll("-", "','");
+					
+					allNewsCnt = dao.totalNewsCnt1(typeS, typeC);
+				} else {
+					//신문사 필터만 적용
+					typeS = request.getParameter("s");
+					typeS = typeS.replaceAll("-", "','");
+					
+					allNewsCnt = dao.totalNewsCnt2(typeS);
+				}
+			} else if(request.getParameter("c") != null) {
+				//카테고리 필터만 적용
 				typeC = request.getParameter("c");
 				typeC = typeC.replaceAll("-", "','");
 				
-				allNewsCnt = dao.totalNewsCnt1(typeS, typeC);
-			}else {	//site 만 필터 적용
-				typeS = request.getParameter("s");
-				typeS = typeS.replaceAll("-", "','");
-				
-				allNewsCnt = dao.totalNewsCnt2(typeS);
+				allNewsCnt = dao.totalNewsCnt3(typeC);
+			} else {
+				//필터X , 검색X
+				allNewsCnt = dao.totalNewsCnt();
 			}
-		}else if(request.getParameter("c") != null) {	//type만 필터 적용
-			typeC = request.getParameter("c");
-			typeC = typeC.replaceAll("-", "','");
+		} else {	//검색O
+			String keyword = request.getParameter("w");
 			
-			allNewsCnt = dao.totalNewsCnt3(typeC);
+			if(keyword.contains(" ")) {
+				String[] word = keyword.split(" ");
+				keyword = "";
+				for(int i = 0; i < word.length; i++) {
+					keyword += "|"+ word[i];
+				}
+				keyword = keyword.substring(1);
+			}
+			
+			//필터O , 검색O
+			if(request.getParameter("s") != null) {
+				if(request.getParameter("c") != null) {
+					//신문사,카테고리 필터 둘다 적용
+					typeS = request.getParameter("s");
+					typeS = typeS.replaceAll("-", "','");
+					typeC = request.getParameter("c");
+					typeC = typeC.replaceAll("-", "','");
+					
+					allNewsCnt = dao.allConditionCnt1(typeS, typeC, keyword);
+				}else {
+					//신문사 필터만 적용
+					typeS = request.getParameter("s");
+					typeS = typeS.replaceAll("-", "','");
+					
+					allNewsCnt = dao.allConditionCnt2(typeS, keyword);
+				}
+			}else if(request.getParameter("c") != null) {
+				//카테고리 필터만 적용
+				typeC = request.getParameter("c");
+				typeC = typeC.replaceAll("-", "','");
+				
+				allNewsCnt = dao.allConditionCnt3(typeC, keyword);
+			} else {
+				//필터X , 검색O
+				allNewsCnt = dao.searchCnt(keyword);
+			}
 		}
+		
+		//--------------------------------------//
 		
 		int realLastPage = (allNewsCnt+19) / 20;	//전체 페이지 수
 		
@@ -66,12 +118,61 @@ public class HomeController {
 		int firstNews = (curPage-1)*20;	//해당 페이지의 첫 기사 번호(0번부터 시작)
 		
 		List<newsVO> newsList = null;
-		if(request.getParameter("s") == null && request.getParameter("c") == null) newsList = dao.selectNews(firstNews);	//해당 페이지의 전체 뉴스 객체
 		
-		if(request.getParameter("s") != null) {	//필터 있을 때
-			if(request.getParameter("c") != null) newsList = dao.selectNews1(typeS,typeC,firstNews);
-			else newsList = dao.selectNews2(typeS,firstNews);
-		} else if(request.getParameter("c") != null) newsList = dao.selectNews3(typeC,firstNews);
+		
+		//전체 뉴스 기사 정보 객체 받기 -----------//
+		
+		//필터 없고 검색 아닐 때
+//		if(request.getParameter("s") == null && request.getParameter("c") == null) newsList = dao.selectNews(firstNews);
+		
+		if(request.getParameter("w") == null) {	//검색X
+			//필터O , 검색X
+			if(request.getParameter("s") != null) {
+				if(request.getParameter("c") != null) {
+					//신문사,카테고리 필터 둘다 적용
+					newsList = dao.selectNews1(typeS,typeC,firstNews);
+				} else {
+					//신문사 필터만 적용
+					newsList = dao.selectNews2(typeS,firstNews);
+				}
+			} else if(request.getParameter("c") != null) {
+				//카테고리 필터만 적용
+				newsList = dao.selectNews3(typeC,firstNews);
+			} else {
+				//필터X , 검색X
+				newsList = dao.selectNews(firstNews);
+			}
+		}else {	//검색O
+			String keyword = request.getParameter("w");
+			
+			if(keyword.contains(" ")) {
+				String[] word = keyword.split(" ");
+				keyword = "";
+				for(int i = 0; i < word.length; i++) {
+					keyword += "|"+ word[i];
+				}
+				keyword = keyword.substring(1);
+			}
+			
+			//필터O , 검색O
+			if(request.getParameter("s") != null) {
+				if(request.getParameter("c") != null) {
+					//신문사,카테고리 필터 둘다 적용
+					newsList = dao.allConditionNews1(typeS, typeC, keyword, firstNews);
+				} else {
+					//신문사 필터만 적용
+					newsList = dao.allConditionNews2(typeS, keyword, firstNews);
+				}
+			} else if(request.getParameter("c") != null) {
+				//카테고리 필터만 적용
+				newsList = dao.allConditionNews3(typeC, keyword, firstNews);
+			} else {
+				//필터X , 검색O
+				newsList = dao.searchNews(keyword, firstNews);
+			}
+		}
+		
+		//--------------------------------//
 		
 		int firstPage = ((curPage-1)/10)*10 + 1;	//해당 페이지 블럭의 첫 페이지
 		
@@ -102,56 +203,9 @@ public class HomeController {
 		return "redirect:/news/1";
 	}
 	
-	// Simply selects the home view to render by returning its name.
-//	@RequestMapping(value = "/news/{curPage1}", method = RequestMethod.GET)
-//	public String viewNewsList(Model model,@PathVariable String curPage1) {
-//		int curPage = 1;
-//		String errMsg = "";
-//		try {curPage = Integer.parseInt(curPage1);} catch(Exception numErr) {errMsg = "잘못된 주소로의 접근입니다.";}	//페이지 패스 에러
-//		
-//		int allNewsCnt = dao.totalNewsCnt();	//전체 뉴스 수
-//		int firstPage = ((curPage-1)/10)*10 + 1;
-//		int realLastPage = (allNewsCnt+19) / 20;	//전체 페이지 수
-//		
-//		if(curPage < 1) {curPage = 1; errMsg = "잘못된 주소로의 접근입니다.";}			//페이지 패스 에러
-//		if(curPage > realLastPage) {curPage = 1; errMsg = "잘못된 주소로의 접근입니다.";}	//페이지 패스 에러
-//		
-//		//페이징 블록 이동 정보 생성
-//		String previous = "yes";
-//		if(firstPage == 1) previous = "no";
-//		String next = "yes";
-//		if((curPage+10) > realLastPage) next = "no";
-//		
-//		int firstNews = (curPage-1)*20;	//해당 페이지의 첫 기사 번호(0번부터 시작)
-//		List<newsVO> newsList = dao.selectNews(firstNews);	//해당 페이지의 뉴스 객체
-//		
-//		//뉴스 정보 객체 보내기
-//		model.addAttribute("newsList",newsList);
-//		
-//		//페이징 정보 객체 보내기
-//		model.addAttribute("firstPage",firstPage);
-//		model.addAttribute("lastPage",realLastPage);
-//		model.addAttribute("curPage",curPage);
-//		model.addAttribute("previous",previous);
-//		model.addAttribute("next",next);		
-//
-//		//잘못된 패스 접근 에러메세지 보내기
-//		model.addAttribute("errMsg",errMsg);
-//		
-//		return "totalNews";
-//	}
-	
 	
 	@RequestMapping(value = "/status")
 	public String statusPage() {
 		return "statusPage";
 	}
-	
-	/*
-	@RequestMapping(value = "/test")
-	public void test() {
-		Bot_R b = new Bot_R();
-		b.crawlingBot(300);
-	}
-	*/
 }

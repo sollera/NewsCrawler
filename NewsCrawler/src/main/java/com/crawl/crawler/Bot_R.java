@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -488,6 +487,7 @@ public class Bot_R {
     	
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+    	SimpleDateFormat dayTime1 = new SimpleDateFormat("yyyy-MM-dd");
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt = conn.createStatement();
@@ -497,11 +497,20 @@ public class Bot_R {
 				int cnt = rs.getInt(1);
 				Statement stmt1 = conn.createStatement();
 				Statement stmt2 = conn.createStatement();
-				ResultSet rs1 = stmt2.executeQuery("SELECT allCnt FROM newsUpdateLog WHERE site='"+site1+"' ORDER BY no desc LIMIT 1");
+				ResultSet rs1 = stmt2.executeQuery("SELECT allCnt,updateTime FROM newsUpdateLog WHERE site='"+site1+"' ORDER BY no desc LIMIT 1");
 				int cnt1 = 0;
-				if(rs1.next()) cnt1 = rs1.getInt(1);
-				if(cnt1 != cnt) {
-					stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+(cnt-cnt1)+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
+				String date = "";
+				String today = dayTime1.format(new Date(time)).toString();
+				if(rs1.next()) {
+					cnt1 = rs1.getInt(1);
+					date = rs1.getString(2).trim().substring(0,10).trim();
+				}
+				if(date.equals(today)) {
+					if(cnt1 != cnt) {
+						stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+(cnt-cnt1)+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
+					}
+				}else {
+					stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+cnt+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
 				}
 				stmt1.close();
     		}

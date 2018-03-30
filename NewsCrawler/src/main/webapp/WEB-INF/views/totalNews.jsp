@@ -61,7 +61,7 @@ setInterval(function(){
 			$("#hot_type").html("조회 실패");
 		}
 	});
-},50000);
+},5000);
 
 function filterOpen(){
 	if($("#tb_filter").css("display") == "none") $("#tb_filter").css("display","");
@@ -104,8 +104,11 @@ function filterApply(){
 		types += "&c="+types2;
 	} else go2 = true;
 	
+	var url = document.URL;
+	var word = "";
+	if(url.indexOf("&w=") != -1) word = url.substring(url.indexOf("&w="));
 	
-	if(go1 == true && go2 == true) location.href="/crawler/news?p=1"+types;
+	if(go1 == true && go2 == true) location.href="/crawler/news?p=1"+types+word;
 }
 
 function CheckSite(check){
@@ -167,6 +170,156 @@ function CheckAllType(obj){
 	}
 }
 
+function search(){
+	var url = document.URL;
+	var urlGetData = url.substring(url.indexOf("?"));
+	if(urlGetData.indexOf("&s") != -1 || urlGetData.indexOf("&c") != -1) url = urlGetData.substring(urlGetData.indexOf("&"));
+	else url = "";
+	var obj = document.getElementById("ip_search");
+	if(obj.value != "" && obj.value != null){
+		var keyword = obj.value;
+		keyword = keyword.trim();
+		while(keyword.indexOf(" ") != -1) {
+			keyword = keyword.replace(" ","+");
+		}
+		//alert("/crawler/news?p=1"+url+"&w="+keyword);
+		if(keyword == "") alert("검색어를 입력해 주세요");
+		else location.href = "/crawler/news?p=1"+url+"&w="+keyword;
+	}
+}
+
+function catchFilter(){
+	var url = document.URL;
+	url = decodeURI(url);
+	
+	if(url.indexOf("?") != -1 && url.indexOf("&") != -1){
+		var url1 = url.substring(url.indexOf("&")+1);
+		var btn = "";
+		var btnText = "";
+		
+		if(url.indexOf("s=") != -1){
+			url1 = url1.substring(url1.indexOf("s="));
+			if(url1.indexOf("&") != -1){
+				btnText = url1.substring(url1.indexOf("s=")+2,url1.indexOf("&"));
+			}else{
+				btnText = url1.substring(url1.indexOf("s=")+2);
+			}
+			while(btnText.indexOf("-") != -1){
+				btnText = btnText.replace("-",",");
+			}
+			btn += "<button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;margin-right:5px;' id='filterS' onclick='filterClean(1)'>"+btnText+" x</button>";
+		}
+		if(url.indexOf("c=") != -1){
+			url1 = url1.substring(url1.indexOf("c="));
+			btnText = "";
+			if(url1.indexOf("&") != -1){
+				btnText = url1.substring(url1.indexOf("c=")+2,url1.indexOf("&"));
+			}else{
+				btnText = url1.substring(url1.indexOf("c=")+2);
+			}
+			while(btnText.indexOf("-") != -1){
+				btnText = btnText.replace("-",",");
+			}
+			btn += "<button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;margin-right:5px;' id='filterC' onclick='filterClean(2)'>"+btnText+" x</button>";
+		}
+		if(url.indexOf("w=") != -1){
+			url1 = url1.substring(url1.indexOf("w="));
+			btnText = "";
+			if(url1.indexOf("&") != -1){
+				btnText = url1.substring(url1.indexOf("w=")+2,url1.indexOf("&"));
+			}else{
+				btnText = url1.substring(url1.indexOf("w=")+2);
+			}
+			while(btnText.indexOf("+") != -1){
+				btnText = btnText.replace("+",",");
+			}
+			btn += "<button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;margin-right:5px;' id='filterW' onclick='filterClean(3)'>"+btnText+" x</button>";
+		}
+		btn += "<button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;margin-left:5px' onclick='location.href=&quot;/crawler/news&quot;'>초기화</button>";
+			
+		//alert(btn);
+		$("#btn_catchFilter").html(btn);
+	}
+}
+
+function filterClean(num){
+	var url = document.URL;
+	url = decodeURI(url);
+	var url1 = url.substring(url.indexOf("?"),url.indexOf("&"));	//페이지 번호까지만 포함한 url
+	var url2 = "";	//지우려는 필터 이전 필터 저장
+	var url3 = "";	//지우려는 필터 이후 필터 저장
+	url = url.substring(url.indexOf("&")+1);
+	
+	if(num == 1){
+		if(url.substring("c=") != -1 || url.substring("w=") != -1) {
+			url3 = url.substring(url.indexOf("&"));
+		}
+	}else if(num == 2){
+		if(url.indexOf("s=") != -1) {
+			url2 = "&"+url.substring(url.indexOf("s="),url.indexOf("&"));
+			url = url.substring(url.indexOf("&")+1);
+		}
+		if(url.indexOf("w=") != -1) url3 = url.substring(url.indexOf("&"));
+	}else if(num == 3){
+		if(url.indexOf("s=") != -1 || url.indexOf("c=") != -1) url2 = url.substring(0,url.indexOf("&w="));
+	}
+	url = url1 + url2 + url3;	//해당 필터를 제외한 나머지 필터는 적용 된 url
+	
+	location.href = "/crawler/news"+url;
+}
+
+function keywordStrong(){
+	var url = document.URL;
+	url = decodeURI(url);
+	
+	if(url.indexOf("w=") != -1){
+		var title = document.getElementsByName("a_title[]");
+		var words = url.substring(url.indexOf("w=")+2);
+		var word = "";
+		
+		if(words.indexOf("+") !== -1) {
+			word = words.split("+");
+			
+			for(var i = 0; i < title.length; i++){
+				var text = title[i].textContent.trim();
+				for(var j = 0; j < word.length; j++){
+					var word1 = word[j];
+					if(word1 != ""){
+						if(text.indexOf(word1) != -1){
+							var txt1 = text.substring(0,text.indexOf(word1));
+							var txt2 = "<font color='red'>"+word1+"</font>";
+							var txt3 = text.substring(text.indexOf(word1)+word1.length);
+							text = txt1 + txt2 + txt3;
+						}
+						title[i].innerHTML = text;
+					}
+					//alert(word1);
+				}
+			}
+			
+		}else {
+			word = words;
+			
+			for(var i = 0; i < title.length; i++){
+				var text = title[i].textContent.trim();
+				if(word1 != ""){
+					if(text.indexOf(word) != -1){
+						var txt1 = text.substring(0,text.indexOf(word));
+						var txt2 = "<font color='red'>"+word+"</font>";
+						var txt3 = text.substring(text.indexOf(word)+word.length);
+						text = txt1 + txt2 + txt3;
+					}
+					title[i].innerHTML = text;
+				}
+				//alert(word);
+			}
+			
+		}
+		
+	}
+	
+}
+
 </script>
 
 </head>
@@ -174,6 +327,8 @@ function CheckAllType(obj){
 <div style="background:#EAEAEA;font-size:20px;text-align:center;">
 신문 모아보기
 </div>
+
+<div style="min-width:1200px;width:100%">
 
 <div style="width:15%;float:left;">&nbsp;</div>
 
@@ -183,8 +338,9 @@ function CheckAllType(obj){
 
 <table border='0' style='color:white;width:100%;height:30px;'><tr>
 <td style='valign:middle;align:center;width:100px;padding-left:10px;'>필터&nbsp;&nbsp;&nbsp;&gt;&gt;</td>
-<td><button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;' onclick='filterOpen()'>추가</button></td>
+<td id="btn_catchFilter"><button type='button' style='color:white;background:#B3AEFF;font-size:5px;border-style:dotted;' onclick='filterOpen()'>추가</button></td>
 </tr></table>
+<script>catchFilter();</script>
 
 <div id="tb_filter" style="width:100%;background:#D7D2FF;display:none;">
 
@@ -241,14 +397,18 @@ function CheckAllType(obj){
 				<tr>
 					<td style="text-align:center;">${list.site}</td>
 					<td style="min-width:567px;max-width:610px;text-overflow:ellipsis;white-space:nowrap;word-wrap:normal;overflow:hidden;">
-						<span style="background:#FF6C6C;color:white;border-radius:4px;padding:1px;">${list.type}</span>&nbsp;<a href="${list.newsURL}">${list.title}</a>
+						<span style="background:#FF6C6C;color:white;border-radius:4px;padding:1px;">${list.type}</span>&nbsp;<a href="${list.newsURL}" name="a_title[]">${list.title}</a>
 					</td>
 					<td style="text-align:center;">${list.enrollDT}</td>
 				</tr>
 			</c:forEach>
+			<c:if test="${empty newsList}">
+				<tr><td colspan="3" align="center">기사가 없습니다.</td></tr>
+			</c:if>
 		</tbody>
 	</table>
 </div>
+<script>keywordStrong();</script>
 
 <!-- 페이징 -->
 <div align="center">
@@ -308,12 +468,20 @@ function changPagingURL(){
 changPagingURL();
 </script>
 
+<br />
+<div style="margin-left:auto;margin-right:auto;width:310px;">
+<input type="text" id="ip_search" style="width:200px;height:30px;border-radius:3px;padding:3px;margin-right:10px;margin-left:50px;">
+<button type="button" style="border-radius:3px;padding:0px;font-size:16px;height:25px;width:40px;" class="btn-default" onclick="search()">검색</button>
+</div>
+
 </div>
 
 <div style="width:15%;float:left;">
 <br /><br />
 <div id="hot_site" style="background:#D9E5FF;margin-left:auto;margin-right:auto;margin-top:50px;width:140px;height:130px;padding-top:10px;border-radius:5px;"></div>
 <div id="hot_type" style="background:#D9E5FF;margin-left:auto;margin-right:auto;margin-top:50px;width:140px;height:130px;padding-top:10px;border-radius:5px;"></div>
+
+</div>
 
 </div>
 
