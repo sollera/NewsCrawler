@@ -205,7 +205,8 @@ public class HomeController {
 	
 	
 	@RequestMapping(value = "/status")
-	public String statusPage() {
-		return "statusPage";
+	public String statusPage(Model model) {
+		model.addAttribute("power",dao.powerChk());
+		return "crawlerStatus";
 	}
 }

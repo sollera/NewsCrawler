@@ -104,16 +104,26 @@
 	
 	
 	
-	<!-- 크롤링 서버 상태 페이지에 필요한 sql들 -->
+	<!-- 크롤러 관리 페이지 instant -->
+	
+	<!-- 크롤러 작동 체크 -->
+	<select id="powerChk" resultType="java.lang.Integer">
+		SELECT power FROM crawlerPowerCheck;
+	</select>
 	
 	<!-- 상태 조회(0-2 & 최근 갱신 시간) -->
 	<select id="statusList" resultType="statusVO">
 		SELECT * FROM statusNews;
 	</select>
 	
-	<!-- 사이트 별 크롤링 성공/실패 개수 세기 -->
-	<select id="errCnt" resultType="ratioVO" parameterType="java.lang.String">
-		SELECT * FROM crawlingLog WHERE dt LIKE CONCAT(#{today},'%');
+	<!-- 크롤러 작동 시작/종료/걸린/평균시간 -->
+	<select id="operateTime" resultType="operateTimeVO">
+		SELECT * from operatingTime;
+	</select>
+	
+	<!-- 크롤링 대상 기사 수 / 새 기사 / 지금까지 수집한 기사 수 -->
+	<select id="searchNewsCnt" resultType="searchNewsVO">
+		SELECT site,target,newData,allData FROM searchNews WHERE lastDataChk = 1;
 	</select>
 	
 	<!-- 에러 로그 -->
@@ -121,15 +131,18 @@
 		SELECT errTime,site,error FROM errLog WHERE errTime LIKE CONCAT(#{today},'%');
 	</select>
 	
-	<!-- 새로 수집한 기사 수 세기 -->
-	<select id="cntNewNews"  resultType="updateCntVO" parameterType="hashmap">
-		SELECT site,cnt,updateTime,allCnt from newsUpdateLog WHERE updateTIme LIKE CONCAT(#{today},'%') and site=#{site} ORDER BY no DESC LIMIT 1;
+	
+	<!-- 크롤러 관리 페이지 history -->
+	
+	<!-- 새로 수집한 기사 -->
+	<select id="searchNewsHistory" resultType="searchNewsHistoryVO" parameterType="java.lang.String">
+		SELECT site,date_format(chkTime,'%H') hour,sum(newData) newDataSum FROM searchNews WHERE DATE(chkTime) = #{today} GROUP BY site,hour;
 	</select>
 	
-	
-	
-	<!-- 둘다에서 쓰이는 sql들 -->
-	
+	<!-- 에러율 -->
+	<select id="errPerTry" resultType="errorRatioVO" parameterType="java.lang.String">
+		SELECT site,success,error dt FROM errCnt WHERE dt = #{today};
+	</select>
 	
 	
 </mapper>

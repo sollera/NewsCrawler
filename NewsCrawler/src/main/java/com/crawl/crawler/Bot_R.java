@@ -29,6 +29,7 @@ public class Bot_R {
 			
     		execEnd();	//쓰레드 강제 종료
     		
+    		btnCtrl(0);
     		crawlerStop();
     		
     	}else {	//크롤링 서버 구동
@@ -37,12 +38,15 @@ public class Bot_R {
     		execStart();	//쓰레드 초기화
     		
     		statusTbCheck();
+    		
+    		btnCtrl(1);
     		crawlerStart(sleepSec);	//크롤러 작동 시작(지정한 주기로 무한반복)
     		
     	}
 		
 	}
 	
+	//쓰레드풀 할당
 	private void execStart() {
 		exec1 = new ScheduledThreadPoolExecutor(1);
 		exec2 = new ScheduledThreadPoolExecutor(1);
@@ -52,6 +56,7 @@ public class Bot_R {
 		exec6 = new ScheduledThreadPoolExecutor(1);
     }
     
+	//쓰레드풀 끝내기 - 크롤러 중지
     private void execEnd() {
     	if(exec1 != null) exec1.shutdownNow();
     	if(exec2 != null) exec2.shutdownNow();
@@ -61,7 +66,7 @@ public class Bot_R {
     	if(exec6 != null) exec6.shutdownNow();
     }
     
-    
+    //크롤러 시작
     private void crawlerStart(int sleepSec) {
     	exec1.scheduleAtFixedRate(new Runnable(){
             public void run() {
@@ -101,12 +106,14 @@ public class Bot_R {
                 	conn.close();
 
         			statusUpdate("chosun",2);
+                	errHistory(true,"조선일보");
                 	updateTime("조선일보");
                 	
-                	errCntUpdate("조선일보",crawler.getChosunCnt()[0],crawler.getChosunCnt()[1]);
+                	updateTimeLog("조선일보",crawler.getChosunCnt()[0]);
                 	
                 }catch (Exception e) {
                 	statusUpdate("chosun",0);
+                	errHistory(false,"조선일보");
             		errLog("조선일보",e.toString());
                 	
                     System.out.println("조선일보 Executor error----------------------------------");
@@ -154,12 +161,14 @@ public class Bot_R {
                 	conn.close();
 
         			statusUpdate("donga",2);
+                	errHistory(true,"동아일보");
                 	updateTime("동아일보");
-                	
-                	errCntUpdate("동아일보",crawler.getDongaCnt()[0],crawler.getDongaCnt()[1]);
+
+                	updateTimeLog("동아일보",crawler.getDongaCnt()[0]);
                 	
                 }catch (Exception e) {
                 	statusUpdate("donga",0);
+                	errHistory(false,"동아일보");
             		errLog("동아일보",e.toString());
                 	
                     System.out.println("동아일보 Executor error----------------------------------");
@@ -207,12 +216,14 @@ public class Bot_R {
                 	conn.close();
 
         			statusUpdate("seoul",2);
+                	errHistory(true,"서울신문");
                 	updateTime("서울신문");
-                	
-                	errCntUpdate("서울신문",crawler.getSeoulCnt()[0],crawler.getSeoulCnt()[1]);
+
+                	updateTimeLog("서울신문",crawler.getSeoulCnt()[0]);
                 	
                 }catch (Exception e) {
                 	statusUpdate("seoul",0);
+                	errHistory(false,"서울신문");
             		errLog("서울신문",e.toString());
                 	
                     System.out.println("서울신문 Executor error----------------------------------");
@@ -260,12 +271,14 @@ public class Bot_R {
                 	conn.close();
 
         			statusUpdate("ytn",2);
+                	errHistory(true,"YTN");
                 	updateTime("YTN");
-                	
-                	errCntUpdate("YTN",crawler.getYtnCnt()[0],crawler.getYtnCnt()[1]);
+
+                	updateTimeLog("YTN",crawler.getYtnCnt()[0]);
                 	
                 }catch (Exception e) {
                 	statusUpdate("ytn",0);
+                	errHistory(false,"YTN");
             		errLog("YTN",e.toString());
                 	
                     System.out.println("YTN Executor error----------------------------------");
@@ -314,12 +327,14 @@ public class Bot_R {
                 	conn.close();
 
         			statusUpdate("segye",2);
+                	errHistory(true,"세계일보");
                 	updateTime("세계일보");
-                	
-                	errCntUpdate("세계일보",crawler.getSegyeCnt()[0],crawler.getSegyeCnt()[1]);
+
+                	updateTimeLog("세계일보",crawler.getSegyeCnt()[0]);
 
                 }catch (Exception e) {
                 	statusUpdate("segye",0);
+                	errHistory(false,"세계일보");
             		errLog("세계일보",e.toString());
                 	
                     System.out.println("세계일보 Executor error----------------------------------");
@@ -367,12 +382,14 @@ public class Bot_R {
                 	conn.close();
 
                 	statusUpdate("hangyeorye",2);
+                	errHistory(true,"한겨례");
                 	updateTime("한겨례");
-                	
-                	errCntUpdate("한겨례",crawler.getHangyeoryeCnt()[0],crawler.getHangyeoryeCnt()[1]);
+
+                	updateTimeLog("한겨례",crawler.getHangyeoryeCnt()[0]);
 
                 }catch (Exception e) {
                 	statusUpdate("hangyeorye",0);
+                	errHistory(false,"한겨례");
             		errLog("한겨례",e.toString());
                 	
                     System.out.println("한겨례 Executor error----------------------------------");
@@ -384,6 +401,7 @@ public class Bot_R {
     	
     }
     
+    //크롤러 중지를 DB에 저장
     private void crawlerStop() {
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
@@ -398,6 +416,7 @@ public class Bot_R {
     	}
     }
     
+    //크롤러 작동 시작,완료,에러를 DB에 저장
     private void statusUpdate(String site,int status) {
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
@@ -405,12 +424,56 @@ public class Bot_R {
         	stmt1.executeUpdate("UPDATE statusNews SET "+site+"="+status);	//크롤링 수행 중 문제 발생을 알리기 위해 DB 정보 수정(0이면 크롤링 실패 혹은 수행 전이라는 뜻)
 	    	stmt1.close();
 	    	conn.close();
+	    	
+	    	timeChk(site, status);
+	    	
     	}catch(Exception e) {
     		errLog(site,e.toString());
     	}
-    	
-    	if(status == 2) updateTimeLog(site);
     }
+    
+    //크롤러 동작 시간 DB에 저장
+    private void timeChk(String site,int status) {
+    	String site1 = "";
+    	if(site.equals("chosun")) site1 = "조선일보";
+    	if(site.equals("donga")) site1 = "동아일보";
+    	if(site.equals("seoul")) site1 = "서울신문";
+    	if(site.equals("ytn")) site1 = "YTN";
+    	if(site.equals("segye")) site1 = "세계일보";
+    	if(site.equals("hangyeorye")) site1 = "한겨례";
+    	
+    	long time = System.currentTimeMillis();
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+		try {
+    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
+    		Statement stmt = conn.createStatement();
+    		Statement stmt1 = conn.createStatement();
+    		ResultSet rs = null;
+    		if(status == 1) {
+    			stmt1.executeUpdate("UPDATE operatingTime SET startTime='"+dayTime.format(new Date(time)).toString()+"' WHERE site='"+site1+"'");
+    		}else if(status == 2) {
+    			stmt1.executeUpdate("UPDATE operatingTime SET endTime='"+dayTime.format(new Date(time)).toString()+"' WHERE site='"+site1+"'");
+    			rs = stmt.executeQuery("SELECT startTime,endTime FROM operatingTime WHERE site='"+site1+"'");
+    			long last = 0;
+    			long first = 0;
+    			if(rs.next()) {
+    				last = rs.getTimestamp(2).getTime();
+    				first = rs.getTimestamp(1).getTime();
+    			}
+    			int spend = (int) ((last-first) / 1000);
+    			stmt1.executeUpdate("UPDATE operatingTime SET spendTime="+spend+",sumTime=(sumtime+"+spend+"),cnt=(cnt+1) WHERE site='"+site1+"'");
+            	rs.close();
+    		}else if(status == 0) {
+    			stmt1.executeUpdate("UPDATE operatingTime SET endTime='"+dayTime.format(new Date(time)).toString()+"',spendTime=0 WHERE site='"+site1+"'");
+    		}
+	    	stmt1.close();
+	    	conn.close();
+    	}catch(Exception eEnd) {
+    		eEnd.printStackTrace();
+    	}
+    }
+    
+    //크롤링 완료 시간 DB에 저장
     private void updateTime(String site) {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
@@ -425,23 +488,7 @@ public class Bot_R {
     	}
     }
     
-    private void errCntUpdate(String site,int success,int error) {
-    	long time = System.currentTimeMillis();
-    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd");
-    	try {
-    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
-    		Statement stmt1 = conn.createStatement();
-        	stmt1.execute("INSERT INTO crawlingLog(site,success,error,successAcc,errorAcc,dt)"
-        			+ " VALUES('"+site+"',"+success+","+error+","+success+","+error+",'"+dayTime.format(new Date(time)).toString()+"')"
-        			+ " ON DUPLICATE KEY UPDATE"
-        			+ " success="+success+",error="+error+",successAcc=(successAcc+"+success+"),errorAcc=(errorAcc+"+error+")");	//크롤링 성공/실패 업데이트, 없으면 추가
-	    	stmt1.close();
-	    	conn.close();
-    	}catch(Exception e) {
-    		errLog(site,e.toString());
-    	}
-    }
-    
+    //에러 메세지 저장
     private void errLog(String site,String errLog) {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
@@ -456,6 +503,7 @@ public class Bot_R {
     	}
     }
     
+    //크롤러 상태 테이블에 레코드가 한줄 도 없을 때 기본값 삽입
     private void statusTbCheck() {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
@@ -475,43 +523,39 @@ public class Bot_R {
     	}catch(Exception e) {}
     }
     
-    private void updateTimeLog(String site) {
-    	String site1 = "";
-    	if(site.equals("chosun")) site1 = "조선일보";
-    	else if(site.equals("donga")) site1 = "동아일보";
-    	else if(site.equals("seoul")) site1 = "서울신문";
-    	else if(site.equals("ytn")) site1 = "YTN";
-    	else if(site.equals("segye")) site1 = "세계일보";
-    	else if(site.equals("hangyeorye")) site1 = "한겨례";
-    	else System.out.println("그럴리 읍다");    	
-    	
+    //새로 수집한 기사 수 저장
+    private void updateTimeLog(String site, int target) {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     	SimpleDateFormat dayTime1 = new SimpleDateFormat("yyyy-MM-dd");
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt = conn.createStatement();
-    		String query = "SELECT count(title) FROM news WHERE site='"+site1+"'";
+    		String query = "SELECT count(title) FROM news WHERE site='"+site+"'";
     		ResultSet rs = stmt.executeQuery(query);
     		if(rs.next()) {
 				int cnt = rs.getInt(1);
 				Statement stmt1 = conn.createStatement();
 				Statement stmt2 = conn.createStatement();
-				ResultSet rs1 = stmt2.executeQuery("SELECT allCnt,updateTime FROM newsUpdateLog WHERE site='"+site1+"' ORDER BY no desc LIMIT 1");
+				Statement stmt3 = conn.createStatement();
+				ResultSet rs1 = stmt2.executeQuery("SELECT allData,chkTime FROM searchNews WHERE site='"+site+"' and lastDataChk=1 LIMIT 1");
 				int cnt1 = 0;
 				String date = "";
 				String today = dayTime1.format(new Date(time)).toString();
 				if(rs1.next()) {
 					cnt1 = rs1.getInt(1);
 					date = rs1.getString(2).trim().substring(0,10).trim();
+	    			System.out.println("*********************************************************크롤링 전까지 기존 기사 수 체크 "+site+"-"+cnt1);
 				}
+				stmt3.executeUpdate("UPDATE searchNews SET lastDataChk=0 WHERE site='"+site+"'");
 				if(date.equals(today)) {
-					if(cnt1 != cnt) {
-						stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+(cnt-cnt1)+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
-					}
+					stmt1.execute("INSERT INTO searchNews(site,target,newData,allData,chkTime) VALUES('"+site+"',"+target+","+(cnt-cnt1)+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
 				}else {
-					stmt1.execute("INSERT INTO newsUpdateLog(site,cnt,allCnt,updateTime) VALUES('"+site1+"',"+cnt+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
+					stmt1.execute("INSERT INTO searchNews(site,target,newData,allData,chkTime) VALUES('"+site+"',"+target+","+cnt+","+cnt+",'"+dayTime.format(new Date(time)).toString()+"')");
 				}
+				rs1.close();
+				stmt3.close();
+				stmt2.close();
 				stmt1.close();
     		}
 	    	rs.close();
@@ -521,6 +565,49 @@ public class Bot_R {
     		e.printStackTrace();
     	}
     	
+    }
+    
+    private void btnCtrl(int power) {
+    	try {
+    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
+    		Statement stmt = conn.createStatement();
+    		String query = "UPDATE crawlerPowerCheck SET power=";
+    		stmt.executeUpdate(query+power);
+	    	stmt.close();
+	    	conn.close();
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
+    private void errHistory(boolean a,String site) {
+    	long time = System.currentTimeMillis();
+    	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd");
+    	try {
+    		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
+    		Statement stmt = conn.createStatement();
+    		ResultSet rs = stmt.executeQuery("SELECT * FROM errCnt WHERE dt = '"+dayTime.format(new Date(time)).toString()+"' and site='"+site+"'");
+    		Statement stmt1 = conn.createStatement();
+    		if(a == true) {	//정상 작동 카운트
+    			if(rs.next()) {
+        			stmt1.execute("UPDATE errCnt SET success=(success+1) WHERE dt = '"+dayTime.format(new Date(time)).toString()+"' and site='"+site+"'");
+        		}else {
+        			stmt1.execute("INSERT INTO errCnt(site,success,error,dt) VALUES('"+site+"',1,0,'"+dayTime.format(new Date(time)).toString()+"')");
+        		}
+        	}else if(a == false) {	//에러 발생 카운트
+        		if(rs.next()) {
+        			stmt1.execute("UPDATE errCnt SET error=(error+1) WHERE dt = '"+dayTime.format(new Date(time)).toString()+"' and site='"+site+"'");
+        		}else {
+        			stmt1.execute("INSERT INTO errCnt(site,success,error,dt) VALUES('"+site+"',0,1,'"+dayTime.format(new Date(time)).toString()+"')");
+        		}
+        	}
+    		rs.close();
+	    	stmt.close();
+    		stmt1.close();
+	    	conn.close();
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
     }
     
 }

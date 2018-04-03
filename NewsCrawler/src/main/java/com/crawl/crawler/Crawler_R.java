@@ -180,6 +180,10 @@ public class Crawler_R {
 			i++;
 			docDonga = Jsoup.connect(DongaTotalNews1+((i-1)*20+1)+DongaTotalNews2).get();
 			newsGroupDonga = docDonga.select("div#container div#contents").first();
+			if(newsGroupDonga == null) {
+				error++;	//에러 카운트
+				continue;
+			}
 			if(newsGroupDonga.select("div.articleList").first().text().trim().equals("해당 기사가 없습니다.")) break;
 			newsLinksDonga = newsGroupDonga.select("div.articleList div.rightList a");
 
@@ -333,6 +337,10 @@ public class Crawler_R {
 				i++;
 				docYtn = Jsoup.connect(YtnTotalNews1+i+YtnTotalNews3).get();
 				newsGroupYtn = docYtn.select("div#czone div#zone1 div#ytn_list_v2014").first();
+				if(newsGroupYtn == null) {
+					error++;	//에러 카운트
+					continue;
+				}
 				newsLinksYtn = newsGroupYtn.select("dl.news_list_v2014 dt a");
 	
 				for(Element linkYtn : newsLinksYtn) {
@@ -436,7 +444,11 @@ public class Crawler_R {
 					}
 					uploadTime = elNewsTime.text();
 					uploadTime = uploadTime.substring(uploadTime.indexOf("수정 :")+4).trim();
+					try {
 					uploadTime = uploadTime.substring(0,16);
+					}catch(Exception e) {
+						uploadTime = todayDate;
+					}
 					if(uploadTime.substring(0,10).equals(todayDate) == false) {
 						go = false;
 						break; 

@@ -7,10 +7,13 @@
 		<typeAliases>
 			<typeAlias type="com.crawl.dto.newsVO" alias="newsVO"/>
 			<typeAlias type="com.crawl.dto.statusVO" alias="statusVO"/>
-			<typeAlias type="com.crawl.dto.crawlingRatioVO" alias="ratioVO"/>
+			<typeAlias type="com.crawl.dto.errorRatioVO" alias="errorRatioVO"/>
 			<typeAlias type="com.crawl.dto.numberOfCasesVO" alias="cntVO"/>
 			<typeAlias type="com.crawl.dto.errLogVO" alias="logVO"/>
 			<typeAlias type="com.crawl.dto.updateCntVO" alias="updateCntVO"/>
+			<typeAlias type="com.crawl.dto.operateTimeVO" alias="operateTimeVO"/>
+			<typeAlias type="com.crawl.dto.searchNewsVO" alias="searchNewsVO"/>
+			<typeAlias type="com.crawl.dto.searchNewsHistoryVO" alias="searchNewsHistoryVO"/>
 		</typeAliases>
 		
 	</configuration>

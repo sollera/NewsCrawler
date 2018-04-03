@@ -11,10 +11,13 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import com.crawl.dto.crawlingRatioVO;
+import com.crawl.dto.errorRatioVO;
 import com.crawl.dto.errLogVO;
 import com.crawl.dto.newsVO;
 import com.crawl.dto.numberOfCasesVO;
+import com.crawl.dto.operateTimeVO;
+import com.crawl.dto.searchNewsHistoryVO;
+import com.crawl.dto.searchNewsVO;
 import com.crawl.dto.statusVO;
 import com.crawl.dto.updateCntVO;
 
@@ -64,7 +67,7 @@ public class NewsDAOImpl implements NewsDAO {
 	}
 
 	@Override
-	public List<crawlingRatioVO> selectErrCnt() {
+	public List<errorRatioVO> selectErrCnt() {
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
 		String today = dayTimeForURL.format(time);
@@ -386,6 +389,39 @@ public class NewsDAOImpl implements NewsDAO {
 			}
 			return sqlSession.selectOne(Namespace+".allConditionCnt4",map);
 		}
+	}
+
+	@Override
+	public int powerChk() {
+		return sqlSession.selectOne(Namespace+".powerChk");
+	}
+
+	@Override
+	public List<operateTimeVO> operatingTime() {
+		return sqlSession.selectList(Namespace+".operateTime");
+	}
+
+	@Override
+	public List<searchNewsVO> searchNewsCnt() {
+		return sqlSession.selectList(Namespace+".searchNewsCnt");
+	}
+	
+	@Override
+	public List<searchNewsHistoryVO> searchNewsHistory() {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+		
+		return sqlSession.selectList(Namespace+".searchNewsHistory", today);
+	}
+
+	@Override
+	public List<errorRatioVO> errorHistory() {
+		long time = System.currentTimeMillis();
+		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTimeForURL.format(time);
+		
+		return sqlSession.selectList(Namespace+".errPerTry", today);
 	}
 
 }
