@@ -1,7 +1,6 @@
 package com.crawl.dao;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +10,8 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
-import com.crawl.dto.errorRatioVO;
-import com.crawl.dto.errLogVO;
 import com.crawl.dto.newsVO;
 import com.crawl.dto.numberOfCasesVO;
-import com.crawl.dto.operateTimeVO;
-import com.crawl.dto.searchNewsHistoryVO;
-import com.crawl.dto.searchNewsVO;
-import com.crawl.dto.statusVO;
-import com.crawl.dto.updateCntVO;
 
 @Repository
 public class NewsDAOImpl implements NewsDAO {
@@ -42,18 +34,13 @@ public class NewsDAOImpl implements NewsDAO {
 	}
 
 	@Override
-	public statusVO selectStatus() {
-		return sqlSession.selectOne(Namespace+".statusList");	//크롤링 상태
-	}
-
-	@Override
 	public List<numberOfCasesVO> newsCnt(String col) {
 		long time = System.currentTimeMillis();
 		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
 		String todate = dayTimeForURL.format(time);
 		
-		if(col.equals("site")) return sqlSession.selectList(Namespace+".cntPerSite",todate);	//경우 별 기사 수(hot / 새로 올라온 기사 수)
-		else if(col.equals("type"))return sqlSession.selectList(Namespace+".cntPerType",todate);	//경우 별 기사 수(hot / 새로 올라온 기사 수)
+		if(col.equals("site")) return sqlSession.selectList(Namespace+".cntPerSite",todate);	//hot 기사 랭킹
+		else if(col.equals("type"))return sqlSession.selectList(Namespace+".cntPerType",todate);	//hot 기사 랭킹
 		else return null;
 	}
 
@@ -66,24 +53,7 @@ public class NewsDAOImpl implements NewsDAO {
 		return sqlSession.selectOne(Namespace+".newsCnt",today);	//당일 기사 수(페이징)
 	}
 
-	@Override
-	public List<errorRatioVO> selectErrCnt() {
-		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dayTimeForURL.format(time);
-		
-		return sqlSession.selectList(Namespace+".errCnt",today);	//사이트 별 크롤링 성공/실패 개수 + 누적
-	}
-
-	@Override
-	public List<errLogVO> selectLog() {
-		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dayTimeForURL.format(time);
-		
-		return sqlSession.selectList(Namespace+".errLog",today);
-	}
-
+	
 	@Override
 	public List<newsVO> selectNews1(String site,String type,int first) {
 		long time = System.currentTimeMillis();
@@ -209,26 +179,6 @@ public class NewsDAOImpl implements NewsDAO {
 			}
 			return sqlSession.selectOne(Namespace+".newsCnt4",map);
 		}
-	}
-
-	@Override
-	public List<updateCntVO> updateLog() {
-		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dayTimeForURL.format(time);
-
-		ArrayList<updateCntVO> updateN = new ArrayList<updateCntVO>();
-		
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("today", today);
-		String[] site = {"조선일보","동아일보","서울신문","YTN","세계일보","한겨례"};
-		for(int i = 0; i < site.length; i++) {
-			map.put("site", site[i]);
-			updateCntVO updateN1 = sqlSession.selectOne(Namespace+".cntNewNews",map);
-			updateN.add(updateN1);
-		}
-		
-		return updateN;
 	}
 
 	@Override
@@ -391,37 +341,6 @@ public class NewsDAOImpl implements NewsDAO {
 		}
 	}
 
-	@Override
-	public int powerChk() {
-		return sqlSession.selectOne(Namespace+".powerChk");
-	}
-
-	@Override
-	public List<operateTimeVO> operatingTime() {
-		return sqlSession.selectList(Namespace+".operateTime");
-	}
-
-	@Override
-	public List<searchNewsVO> searchNewsCnt() {
-		return sqlSession.selectList(Namespace+".searchNewsCnt");
-	}
 	
-	@Override
-	public List<searchNewsHistoryVO> searchNewsHistory() {
-		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dayTimeForURL.format(time);
-		
-		return sqlSession.selectList(Namespace+".searchNewsHistory", today);
-	}
-
-	@Override
-	public List<errorRatioVO> errorHistory() {
-		long time = System.currentTimeMillis();
-		SimpleDateFormat dayTimeForURL = new SimpleDateFormat("yyyy-MM-dd");
-		String today = dayTimeForURL.format(time);
-		
-		return sqlSession.selectList(Namespace+".errPerTry", today);
-	}
 
 }

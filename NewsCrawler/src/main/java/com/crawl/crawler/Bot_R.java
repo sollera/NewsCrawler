@@ -35,13 +35,14 @@ public class Bot_R {
     	}else {	//크롤링 서버 구동
     		
     		execEnd();	//크롤러가 돌아가는 중인데 다시 돌릴 경우를 대비한 쓰레드 강제 종료
-    		execStart();	//쓰레드 초기화
-    		
-    		statusTbCheck();
-    		
-    		btnCtrl(1);
-    		crawlerStart(sleepSec);	//크롤러 작동 시작(지정한 주기로 무한반복)
-    		
+//    		if(exec1 == null && exec2 == null && exec3 == null && exec4 == null && exec5 == null && exec6 == null) {	//쓰레드 즉시 강제종료 안되는 문제 때문에 차선책으로 안돌아갈때만 구동하려 했으나, 셧다운 해도 null이 되지는 않는 건지 문제 발생
+    			execStart();	//쓰레드 할당
+        		
+        		statusTbCheck();
+        		
+        		btnCtrl(1);
+        		crawlerStart(sleepSec);	//크롤러 작동 시작(지정한 주기로 무한반복)
+//    		}
     	}
 		
 	}
@@ -528,24 +529,24 @@ public class Bot_R {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
     	SimpleDateFormat dayTime1 = new SimpleDateFormat("yyyy-MM-dd");
+		String today = dayTime1.format(new Date(time)).toString();
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
     		Statement stmt = conn.createStatement();
-    		String query = "SELECT count(title) FROM news WHERE site='"+site+"'";
+    		String query = "SELECT count(title) FROM news WHERE site='"+site+"' and enrollDT LIKE '"+today+"%'";
     		ResultSet rs = stmt.executeQuery(query);
+    		int cnt = 0;
     		if(rs.next()) {
-				int cnt = rs.getInt(1);
+				cnt = rs.getInt(1);
 				Statement stmt1 = conn.createStatement();
 				Statement stmt2 = conn.createStatement();
 				Statement stmt3 = conn.createStatement();
-				ResultSet rs1 = stmt2.executeQuery("SELECT allData,chkTime FROM searchNews WHERE site='"+site+"' and lastDataChk=1 LIMIT 1");
+				ResultSet rs1 = stmt2.executeQuery("SELECT allData,chkTime FROM searchNews WHERE site='"+site+"' and lastDataChk=1");
 				int cnt1 = 0;
 				String date = "";
-				String today = dayTime1.format(new Date(time)).toString();
 				if(rs1.next()) {
 					cnt1 = rs1.getInt(1);
 					date = rs1.getString(2).trim().substring(0,10).trim();
-	    			System.out.println("*********************************************************크롤링 전까지 기존 기사 수 체크 "+site+"-"+cnt1);
 				}
 				stmt3.executeUpdate("UPDATE searchNews SET lastDataChk=0 WHERE site='"+site+"'");
 				if(date.equals(today)) {
@@ -567,6 +568,7 @@ public class Bot_R {
     	
     }
     
+    //크롤러 컨트롤 버튼 상태 저장
     private void btnCtrl(int power) {
     	try {
     		Connection conn = DriverManager.getConnection("jdbc:mysql://192.168.23.103:3306/kopoctc?autoReconnect=true&useSSL=false","root","12345678");
@@ -580,6 +582,7 @@ public class Bot_R {
     	}
     }
     
+    //에러 발생율 저장
     private void errHistory(boolean a,String site) {
     	long time = System.currentTimeMillis();
     	SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd");

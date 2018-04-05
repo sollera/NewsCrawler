@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crawl.crawler.Bot_R;
 import com.crawl.dao.NewsDAO;
+import com.crawl.dao.StatusDAO;
 import com.crawl.dto.errorRatioVO;
 import com.crawl.dto.errLogVO;
 import com.crawl.dto.numberOfCasesVO;
@@ -24,7 +25,9 @@ import com.crawl.dto.statusVO;
 public class RestAPIController {
 	
 	@Inject
-	NewsDAO dao;
+	private NewsDAO news;
+	@Inject
+	private StatusDAO status;
 	
 	Bot_R newsBot = new Bot_R();
 	
@@ -32,7 +35,7 @@ public class RestAPIController {
 	@RequestMapping("/topSite.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<numberOfCasesVO> topSite(){
-		List<numberOfCasesVO> listS = dao.newsCnt("site");
+		List<numberOfCasesVO> listS = news.newsCnt("site");
 		return listS;
 	}
 	
@@ -40,15 +43,15 @@ public class RestAPIController {
 	@RequestMapping("/topType.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<numberOfCasesVO> topType(){		
-		List<numberOfCasesVO> listT = dao.newsCnt("type");
+		List<numberOfCasesVO> listT = news.newsCnt("type");
 		return listT;
 	}
 
-	//instant page - 크롤러 작동 중인지 확인
+	//instant page - 크롤러 작동 상태 확인
 	@RequestMapping("/dbCheck.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public statusVO dbCheck(){
-		return dao.selectStatus();
+		return status.selectStatus();
 	}
 	
 	//instant page - 크롤러 컨트롤
@@ -66,7 +69,7 @@ public class RestAPIController {
 	@RequestMapping("/operatingTime.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<operateTimeVO> operatingTime(){
-		List<operateTimeVO> timeVO = dao.operatingTime();
+		List<operateTimeVO> timeVO = status.operatingTime();
 		return timeVO;
 	}
 	
@@ -74,7 +77,7 @@ public class RestAPIController {
 	@RequestMapping("/searchNews.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<searchNewsVO> searchNews(){
-		List<searchNewsVO> searchNews = dao.searchNewsCnt();
+		List<searchNewsVO> searchNews = status.searchNewsCnt();
 		return searchNews;
 	}
 
@@ -82,7 +85,7 @@ public class RestAPIController {
 	@RequestMapping("/errLog.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<errLogVO> newLog(){
-		List<errLogVO> listLog = dao.selectLog();
+		List<errLogVO> listLog = status.selectLog();
 		return listLog;
 	}
 	
@@ -90,7 +93,7 @@ public class RestAPIController {
 	@RequestMapping("/collectHistory.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<searchNewsHistoryVO> newDataHistory(){
-		List<searchNewsHistoryVO> newsHistory = dao.searchNewsHistory();
+		List<searchNewsHistoryVO> newsHistory = status.searchNewsHistory();
 		return newsHistory;
 	}
 	
@@ -98,7 +101,7 @@ public class RestAPIController {
 	@RequestMapping("/errorHistory.do")
 	@ResponseBody // 리턴데이터를 json으로 변환(생략가능)
 	public List<errorRatioVO> errorHistory(){
-		List<errorRatioVO> errCnt = dao.errorHistory();
+		List<errorRatioVO> errCnt = status.errorHistory();
 		return errCnt;
 	}
 	

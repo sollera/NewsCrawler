@@ -397,7 +397,7 @@ function keywordStrong(){
 				<tr>
 					<td style="text-align:center;">${list.site}</td>
 					<td style="min-width:567px;max-width:610px;text-overflow:ellipsis;white-space:nowrap;word-wrap:normal;overflow:hidden;">
-						<span style="background:#FF6C6C;color:white;border-radius:4px;padding:1px;">${list.type}</span>&nbsp;<a href="${list.newsURL}" name="a_title[]">${list.title}</a>
+						<span style="background:#FF6C6C;color:white;border-radius:4px;padding:1px;">${list.type}</span>&nbsp;<a href="${list.newsURL}" name="a_title[]" target="_blank">${list.title}</a>
 					</td>
 					<td style="text-align:center;">${list.enrollDT}</td>
 				</tr>

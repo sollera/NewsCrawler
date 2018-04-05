@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.crawl.dao.NewsDAO;
+import com.crawl.dao.StatusDAO;
 import com.crawl.dto.newsVO;
 
 /**
@@ -19,7 +20,9 @@ import com.crawl.dto.newsVO;
 @Controller
 public class HomeController {
 	@Inject
-	private NewsDAO dao;
+	private NewsDAO news;
+	@Inject
+	private StatusDAO status;
 	
 	// Simply selects the home view to render by returning its name.
 	@RequestMapping(value = "/news", method = RequestMethod.GET)
@@ -47,23 +50,23 @@ public class HomeController {
 					typeC = request.getParameter("c");
 					typeC = typeC.replaceAll("-", "','");
 					
-					allNewsCnt = dao.totalNewsCnt1(typeS, typeC);
+					allNewsCnt = news.totalNewsCnt1(typeS, typeC);
 				} else {
 					//신문사 필터만 적용
 					typeS = request.getParameter("s");
 					typeS = typeS.replaceAll("-", "','");
 					
-					allNewsCnt = dao.totalNewsCnt2(typeS);
+					allNewsCnt = news.totalNewsCnt2(typeS);
 				}
 			} else if(request.getParameter("c") != null) {
 				//카테고리 필터만 적용
 				typeC = request.getParameter("c");
 				typeC = typeC.replaceAll("-", "','");
 				
-				allNewsCnt = dao.totalNewsCnt3(typeC);
+				allNewsCnt = news.totalNewsCnt3(typeC);
 			} else {
 				//필터X , 검색X
-				allNewsCnt = dao.totalNewsCnt();
+				allNewsCnt = news.totalNewsCnt();
 			}
 		} else {	//검색O
 			String keyword = request.getParameter("w");
@@ -86,23 +89,23 @@ public class HomeController {
 					typeC = request.getParameter("c");
 					typeC = typeC.replaceAll("-", "','");
 					
-					allNewsCnt = dao.allConditionCnt1(typeS, typeC, keyword);
+					allNewsCnt = news.allConditionCnt1(typeS, typeC, keyword);
 				}else {
 					//신문사 필터만 적용
 					typeS = request.getParameter("s");
 					typeS = typeS.replaceAll("-", "','");
 					
-					allNewsCnt = dao.allConditionCnt2(typeS, keyword);
+					allNewsCnt = news.allConditionCnt2(typeS, keyword);
 				}
 			}else if(request.getParameter("c") != null) {
 				//카테고리 필터만 적용
 				typeC = request.getParameter("c");
 				typeC = typeC.replaceAll("-", "','");
 				
-				allNewsCnt = dao.allConditionCnt3(typeC, keyword);
+				allNewsCnt = news.allConditionCnt3(typeC, keyword);
 			} else {
 				//필터X , 검색O
-				allNewsCnt = dao.searchCnt(keyword);
+				allNewsCnt = news.searchCnt(keyword);
 			}
 		}
 		
@@ -130,17 +133,17 @@ public class HomeController {
 			if(request.getParameter("s") != null) {
 				if(request.getParameter("c") != null) {
 					//신문사,카테고리 필터 둘다 적용
-					newsList = dao.selectNews1(typeS,typeC,firstNews);
+					newsList = news.selectNews1(typeS,typeC,firstNews);
 				} else {
 					//신문사 필터만 적용
-					newsList = dao.selectNews2(typeS,firstNews);
+					newsList = news.selectNews2(typeS,firstNews);
 				}
 			} else if(request.getParameter("c") != null) {
 				//카테고리 필터만 적용
-				newsList = dao.selectNews3(typeC,firstNews);
+				newsList = news.selectNews3(typeC,firstNews);
 			} else {
 				//필터X , 검색X
-				newsList = dao.selectNews(firstNews);
+				newsList = news.selectNews(firstNews);
 			}
 		}else {	//검색O
 			String keyword = request.getParameter("w");
@@ -158,17 +161,17 @@ public class HomeController {
 			if(request.getParameter("s") != null) {
 				if(request.getParameter("c") != null) {
 					//신문사,카테고리 필터 둘다 적용
-					newsList = dao.allConditionNews1(typeS, typeC, keyword, firstNews);
+					newsList = news.allConditionNews1(typeS, typeC, keyword, firstNews);
 				} else {
 					//신문사 필터만 적용
-					newsList = dao.allConditionNews2(typeS, keyword, firstNews);
+					newsList = news.allConditionNews2(typeS, keyword, firstNews);
 				}
 			} else if(request.getParameter("c") != null) {
 				//카테고리 필터만 적용
-				newsList = dao.allConditionNews3(typeC, keyword, firstNews);
+				newsList = news.allConditionNews3(typeC, keyword, firstNews);
 			} else {
 				//필터X , 검색O
-				newsList = dao.searchNews(keyword, firstNews);
+				newsList = news.searchNews(keyword, firstNews);
 			}
 		}
 		
@@ -206,7 +209,7 @@ public class HomeController {
 	
 	@RequestMapping(value = "/status")
 	public String statusPage(Model model) {
-		model.addAttribute("power",dao.powerChk());
+		model.addAttribute("power",status.powerChk());
 		return "crawlerStatus";
 	}
 }

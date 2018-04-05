@@ -101,48 +101,4 @@
 		SELECT count(title) FROM news WHERE enrollDT LIKE CONCAT(#{today},'%') and site in(#{site}) and (type in(#{type}) or type not in('정치','경제','사회','문화','오피니언','스포츠','연예','스포츠ㆍ연예')) and title REGEXP #{titleSearch}; 
 	</select>
 	
-	
-	
-	
-	<!-- 크롤러 관리 페이지 instant -->
-	
-	<!-- 크롤러 작동 체크 -->
-	<select id="powerChk" resultType="java.lang.Integer">
-		SELECT power FROM crawlerPowerCheck;
-	</select>
-	
-	<!-- 상태 조회(0-2 & 최근 갱신 시간) -->
-	<select id="statusList" resultType="statusVO">
-		SELECT * FROM statusNews;
-	</select>
-	
-	<!-- 크롤러 작동 시작/종료/걸린/평균시간 -->
-	<select id="operateTime" resultType="operateTimeVO">
-		SELECT * from operatingTime;
-	</select>
-	
-	<!-- 크롤링 대상 기사 수 / 새 기사 / 지금까지 수집한 기사 수 -->
-	<select id="searchNewsCnt" resultType="searchNewsVO">
-		SELECT site,target,newData,allData FROM searchNews WHERE lastDataChk = 1;
-	</select>
-	
-	<!-- 에러 로그 -->
-	<select id="errLog" resultType="logVO" parameterType="java.lang.String">
-		SELECT errTime,site,error FROM errLog WHERE errTime LIKE CONCAT(#{today},'%');
-	</select>
-	
-	
-	<!-- 크롤러 관리 페이지 history -->
-	
-	<!-- 새로 수집한 기사 -->
-	<select id="searchNewsHistory" resultType="searchNewsHistoryVO" parameterType="java.lang.String">
-		SELECT site,date_format(chkTime,'%H') hour,sum(newData) newDataSum FROM searchNews WHERE DATE(chkTime) = #{today} GROUP BY site,hour;
-	</select>
-	
-	<!-- 에러율 -->
-	<select id="errPerTry" resultType="errorRatioVO" parameterType="java.lang.String">
-		SELECT site,success,error dt FROM errCnt WHERE dt = #{today};
-	</select>
-	
-	
 </mapper>
